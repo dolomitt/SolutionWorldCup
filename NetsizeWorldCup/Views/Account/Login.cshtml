@@ -1,63 +1,69 @@
-﻿@using NetsizeWorldCup.Models
-@model LoginViewModel
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Light Blue - Admin Template</title>
+    <link href="css/application.min.css" rel="stylesheet">
+    <link rel="shortcut icon" href="img/favicon.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <meta charset="utf-8">
+    <script src="lib/jquery/jquery-2.0.3.min.js"> </script>
+    <script src="lib/jquery-pjax/jquery.pjax.js"></script>
+    <script src="lib/backbone/underscore-min.js"></script>
+    <script src="js/settings.js"> </script>
+</head>
+<body>
+    <div class="single-widget-container">
+        <section class="widget login-widget">
+            <header class="text-align-center">
+                <h4>Login to your account</h4>
+            </header>
+            <div class="body">
+                <form class="no-margin"
+                      action="index.html" method="get">
+                    <fieldset>
+                        <div class="form-group no-margin">
+                            <label for="email">Email</label>
 
-@{
-    ViewBag.Title = "Log in";
-}
+                            <div class="input-group input-group-lg">
+                                <span class="input-group-addon">
+                                    <i class="eicon-user"></i>
+                                </span>
+                                <input id="email" type="email" class="form-control input-lg"
+                                       placeholder="Your Email">
+                            </div>
 
-<h2>@ViewBag.Title.</h2>
-<div class="row">
-    <div class="col-md-8">
-        <section id="loginForm">
-            @using (Html.BeginForm("Login", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
-            {
-                @Html.AntiForgeryToken()
-                <h4>Use a local account to log in.</h4>
-                <hr />
-                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-                <div class="form-group">
-                    @Html.LabelFor(m => m.Email, new { @class = "col-md-2 control-label" })
-                    <div class="col-md-10">
-                        @Html.TextBoxFor(m => m.Email, new { @class = "form-control" })
-                        @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
-                    </div>
-                </div>
-                <div class="form-group">
-                    @Html.LabelFor(m => m.Password, new { @class = "col-md-2 control-label" })
-                    <div class="col-md-10">
-                        @Html.PasswordFor(m => m.Password, new { @class = "form-control" })
-                        @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
-                    </div>
-                </div>
-                <div class="form-group">
-                    <div class="col-md-offset-2 col-md-10">
-                        <div class="checkbox">
-                            @Html.CheckBoxFor(m => m.RememberMe)
-                            @Html.LabelFor(m => m.RememberMe)
                         </div>
+
+                        <div class="form-group">
+                            <label for="password">Password</label>
+
+                            <div class="input-group input-group-lg">
+                                <span class="input-group-addon">
+                                    <i class="fa fa-lock"></i>
+                                </span>
+                                <input id="password" type="password" class="form-control input-lg"
+                                       placeholder="Your Password">
+                            </div>
+
+                        </div>
+                    </fieldset>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-block btn-lg btn-danger">
+                            <span class="small-circle"><i class="fa fa-caret-right"></i></span>
+                            <small>Sign In</small>
+                        </button>
+                        <div class="forgot"><a class="forgot" href="#">Forgot Username or Password?</a></div>
                     </div>
+                </form>
+            </div>
+            <footer>
+                <div class="facebook-login">
+                    <a href="index.html"><span><i class="fa fa-facebook-square fa-lg"></i> LogIn with Facebook</span></a>
                 </div>
-                <div class="form-group">
-                    <div class="col-md-offset-2 col-md-10">
-                        <input type="submit" value="Log in" class="btn btn-default" />
-                    </div>
-                </div>
-                <p>
-                    @Html.ActionLink("Register as a new user", "Register")
-                </p>
-                @* Enable this once you have account confirmation enabled for password reset functionality
-                <p>
-                    @Html.ActionLink("Forgot your password?", "ForgotPassword")
-                </p>*@
-            }
+            </footer>
         </section>
     </div>
-    <div class="col-md-4">
-        <section id="socialLoginForm">
-            @Html.Partial("_ExternalLoginsListPartial", new ExternalLoginListViewModel { Action = "ExternalLogin", ReturnUrl = ViewBag.ReturnUrl })
-        </section>
-    </div>
-</div>
-@section Scripts {
-    @Scripts.Render("~/bundles/jqueryval")
-}
+</body>
+</html>
