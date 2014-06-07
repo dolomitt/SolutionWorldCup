@@ -1,0 +1,146 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - NS WC2014</title>
+    @Styles.Render("~/css")
+    @Scripts.Render("~/bundles/modernizr")
+
+</head>
+<body class="background-dark">
+    <div class="logo">
+        <h4>Netsize <strong>World Cup 2014</strong></h4>
+    </div>
+    <nav id="sidebar" class="sidebar nav-collapse collapse">
+        <ul id="side-nav" class="side-nav">
+            <li class="active">
+                @Html.ActionLink("Dashboard", "Index", "Home")
+            </li>
+            <li>
+                @Html.ActionLink("Users", "Index", "Account")
+            </li>
+            <li>
+                @Html.ActionLink("Teams", "Index", "Team")
+            </li>
+            <li>
+                @Html.ActionLink("Games", "Index", "Game")
+            </li>
+            <li>
+                @Html.ActionLink("Calendar", "Calendar", "Game")
+            </li>
+            <li>
+                @Html.ActionLink("Scores", "Index", "Home")
+            </li>
+            <li>
+                @Html.ActionLink("Bets", "Index", "Home")
+            </li>
+            <li>
+                @Html.ActionLink("Rules", "Index", "Home")
+            </li>
+        </ul>
+    </nav>
+    <div class="wrap">
+        <header class="page-header">
+            <div class="navbar">
+                <ul class="nav navbar-nav navbar-right pull-right">
+                    <li class="visible-phone-landscape">
+                        <a href="#" id="search-toggle">
+                            <i class="fa fa-search"></i>
+                        </a>
+                    </li>
+                    <li class="hidden-xs">
+                        <a href="/Account/Manage" id="settings"
+                           title="Settings"
+                           data-toggle="popover"
+                           data-placement="bottom">
+                            <i class="fa fa-cog"></i>
+                        </a>
+                    </li>
+                    <li class="hidden-xs dropdown">
+                        <a href="#" title="Account" id="account"
+                           class="dropdown-toggle"
+                           data-toggle="dropdown">
+                            <i class="fa fa-user"></i>
+                        </a>
+                        <ul id="account-menu" class="dropdown-menu account" role="menu">
+                            <li role="presentation" class="account-picture">
+                                <img src="img/2.jpg" alt="">
+                                Philip Daineka
+                            </li>
+                            <li role="presentation">
+                                <a href="" class="link">
+                                    <i class="fa fa-user"></i>
+                                    Profile
+                                </a>
+                            </li>
+                            <li role="presentation">
+                                <a href="component_calendar.html" class="link">
+                                    <i class="fa fa-calendar"></i>
+                                    Calendar
+                                </a>
+                            </li>
+                            <li role="presentation">
+                                <a href="#" class="link">
+                                    <i class="fa fa-inbox"></i>
+                                    Inbox
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="visible-xs">
+                        <a href="#"
+                           class="btn-navbar"
+                           data-toggle="collapse"
+                           data-target=".sidebar"
+                           title="">
+                            <i class="fa fa-bars"></i>
+                        </a>
+                    </li>
+                    <li class="hidden-xs"><a href="/Account/Login"><i class="fa fa-sign-out"></i></a></li>
+                </ul>
+            </div>
+        </header>
+        <div class="content container">
+            @RenderBody()
+        </div>
+        <div class="loader-wrap hiding hide">
+            <i class="fa fa-spinner fa-spin"></i>
+        </div>
+        <div class="loader-wrap hiding hide">
+            <i class="fa fa-spinner fa-spin"></i>
+        </div>
+    </div>
+
+    <script src="/Content/lib/jquery/jquery-2.0.3.min.js"></script>
+    <script src="/Content/lib/jquery-pjax/jquery.pjax.js"></script>
+    <script src="/Content/lib/jquery-maskedinput/jquery.maskedinput.js"></script>
+    <script src="/Content/lib/parsley/parsley.js"></script>
+    <script src="/Content/lib/icheck.js/jquery.icheck.js"></script>
+    <script src="/Content/lib/select2.js"></script>
+    <script src="/Content/lib/backbone/underscore-min.js"></script>
+    <script src="/Content/lib/bootstrap/transition.js"></script>
+    <script src="/Content/lib/bootstrap/collapse.js"></script>
+    <script src="/Content/lib/bootstrap/alert.js"></script>
+    <script src="/Content/lib/bootstrap/tooltip.js"></script>
+    <script src="/Content/lib/bootstrap/popover.js"></script>
+    <script src="/Content/lib/bootstrap/button.js"></script>
+    <script src="/Content/lib/bootstrap/dropdown.js"></script>
+    <script src="/Content/lib/bootstrap/modal.js"></script>
+    <script src="/Content/lib/bootstrap/tab.js"></script>
+    <script src="/Content/js/app.js"></script>
+    <script src="/Content/js/settings.js"></script>
+    <script src="/Content/lib/bootstrap/carousel.js"></script>
+    <script src="/Content/lib/jquery-ui-1.10.3.custom.js"></script>
+    <script src="/Content/lib/jquery.ui.touch-punch.js"></script>
+    <script src="/Content/lib/jquery.nestable.js"></script>
+    <script src="/Content/js/list-groups.js"></script>
+    <script src="/Content/lib/jquery.dataTables.min.js"></script>
+    @*<script src="/Content/lib/backbone/backbone-min.js"></script>
+    <script src="/Content/lib/backbone/backbone-pageable.js"></script>
+    <script src="/Content/lib/backgrid/backgrid.js"></script>
+    <script src="/Content/lib/backgrid/backgrid-paginator.js"></script>*@
+    @*<script src="/Content/js/tables-dynamic.js"></script>*@
+    @RenderSection("scripts", required: false)
+</body>
+</html>

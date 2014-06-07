@@ -1,0 +1,66 @@
+﻿@model IEnumerable<NetsizeWorldCup.Game>
+
+@{
+    ViewBag.Title = "Games";
+}
+
+<div class="col-md-10 col-md-offset-1">
+    <section class="widget">
+        <header>
+            <h4>
+                <i class="fa fa-file-alt"></i>
+                Current Games
+            </h4>
+            <div class="actions hidden-xs-portrait">
+                <input id="search" type="search" placeholder="Search">
+            </div>
+        </header>
+        <blockquote>User Id = @ViewBag.UserId</blockquote>
+        <div class="body">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th class="hidden-xs-portrait">#</th>
+                        <th class="hidden-xs-portrait">Date</th>
+                        <th></th>
+                        <th>Local</th>
+                        <th>Result</th>
+                        <th>Visitor</th>
+                        <th></th>
+                        <th class="hidden-xs-portrait">Location</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td class="hidden-xs-portrait">
+                                @Html.DisplayFor(modelItem => item.ID)
+                            </td>
+                            <td class="hidden-xs-portrait">
+                                @item.StartDate.UtcToLocal((TimeZoneInfo)ViewBag.CurrentTimeZoneInfo)
+                                @*@Html.DisplayFor(modelItem => item.StartDate)*@
+                            </td>
+                            <td>
+                                <img src="@item.Local.FlagUrl" style="box-shadow: 0px 0px 10px #888;border-radius: 5px;" />
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Local.Name)
+                            </td>
+                            <td>1 X 2</td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Visitor.Name)
+                            </td>
+                            <td>
+                                <img src="@item.Visitor.FlagUrl" style="box-shadow: 0px 0px 10px #888;border-radius: 5px;" />
+                            </td>
+                            <td class="hidden-xs-portrait">
+                                @Html.DisplayFor(modelItem => item.Location)
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </section>
+</div>

@@ -1,0 +1,48 @@
+﻿@model IEnumerable<NetsizeWorldCup.Models.ApplicationUser>
+
+@{
+    ViewBag.Title = "Players";
+}
+
+<div class="row">
+    <div class="col-md-10">
+        <section class="widget">
+            <header>
+                <h4>
+                    <i class="fa fa-group"></i>
+                    Users
+                </h4>
+            </header>
+            <div class="body">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.UserName)
+                            </th>
+                            <th>TimeZone</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (NetsizeWorldCup.Models.ApplicationUser item in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <a href="@item.ImageUrl" />
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.UserName)
+                                </td>
+                                <td>
+                                    @item.TimeZoneInfo.DisplayName
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+</div>

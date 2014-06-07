@@ -1,0 +1,45 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@{
+    ViewBag.Title = "Calendar";
+}
+
+<div class="row">
+    <div class="col-md-8">
+        <section class="widget">
+            <header>
+                <h4>
+                    <i class="fa fa-calendar"></i>
+                    Calendar
+                </h4>
+                <div class="actions">
+                    <button id="today" type="button" class="btn btn-sm btn-warning">
+                        Today
+                    </button>
+                    <div id="calendar-switcher" class="btn-group" data-toggle="buttons">
+                        <label class="btn btn-sm btn-success active" data-toggle-class="btn-success" data-toggle-passive-class="btn-default">
+                            <input type="radio" name="view" value="month"> Month
+                        </label>
+                        <label class="btn btn-sm btn-default" data-toggle-class="btn-success" data-toggle-passive-class="btn-default">
+                            <input type="radio" name="view" value="agendaWeek"> Week
+                        </label>
+                        <label class="btn btn-sm btn-default" data-toggle-class="btn-success" data-toggle-passive-class="btn-default">
+                            <input type="radio" name="view" value="agendaDay"> Day
+                        </label>
+                    </div>
+                </div>
+            </header>
+            <div class="body">
+                <div id="calendar" class="calendar"> </div>
+            </div>
+        </section>
+    </div>
+</div>
+
+@section Scripts
+{
+    <script src="/Content/lib/fullcalendar/fullcalendar.js"></script>
+    <script src="/Content/js/calendar.js"></script>
+}

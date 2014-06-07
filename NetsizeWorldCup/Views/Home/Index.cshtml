@@ -1,0 +1,67 @@
+﻿@{
+    ViewBag.Title = "Dashboard";
+}
+
+<div class="row">
+    <div class="col-md-4">
+        <section class="widget small">
+            <header>
+                <h4>
+                    <i class="eicon-share"></i>
+                    Next Game
+                </h4>
+            </header>
+            <div class="body">
+                <div id="feed" class="feed">
+                    <div class="wrapper">
+                        <div class="vertical-line"></div>
+                        <section class="feed-item">
+                            <div class="feed-item-body">
+                                <div class="text">
+                                    @ViewBag.NextGame.Local.DisplayName - @ViewBag.NextGame.Visitor.DisplayName
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+    <div class="col-md-8">
+        <section class="widget large">
+            <header>
+                <h4>
+                    <i class="eicon-share"></i>
+                    Feed
+                </h4>
+            </header>
+            <div class="body">
+                <div id="feed" class="feed">
+                    <div class="wrapper">
+                        <div class="vertical-line"></div>
+                        @foreach (var item in ViewBag.Feeds)
+                        {
+                            <section class="feed-item">
+                                <div class="img-responsive pull-left">
+                                    <img src="@item.ImageUrl" style="width:75px" />
+                                </div>
+                                <div class="feed-item-body">
+                                    <div class="text">
+                                        <a href="@item.Url">@item.Title</a>
+                                    </div>
+                                    <div class="text">
+                                        @Html.Raw(item.Summary)
+                                    </div>
+                                    <div class="time pull-left">
+                                        @item.PublishedDate
+                                    </div>
+                                </div>
+                            </section>
+                        }
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+</div>
