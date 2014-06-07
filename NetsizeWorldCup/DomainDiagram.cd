@@ -1,58 +1,42 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
-  <Class Name="NetsizeWorldCup.Player">
-    <Position X="6.25" Y="2.75" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAQAAAAA=</HashCode>
-      <FileName>Models\Player.cs</FileName>
-    </TypeIdentifier>
-    <ShowAsCollectionAssociation>
-      <Property Name="Bets" />
-    </ShowAsCollectionAssociation>
-  </Class>
   <Class Name="NetsizeWorldCup.Team">
     <Position X="15.25" Y="2.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAEAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAEAA=</HashCode>
+      <HashCode>AAAAEEAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAEAA=</HashCode>
       <FileName>Models\Team.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="NetsizeWorldCup.Game">
     <Position X="19.75" Y="2.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AABAAAEAAAAAAAgAAAIAAAQAAABAAAAAAAAEAEAABAA=</HashCode>
+      <HashCode>AAAAEAEAAAAAAAAAAAIAAAQgAABAAAAAAAAAAEAABAA=</HashCode>
       <FileName>Models\Game.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
-      <Property Name="Visitor" />
       <Property Name="Local" />
+      <Property Name="Visitor" />
       <Property Name="Phase" />
     </ShowAsAssociation>
   </Class>
   <Class Name="NetsizeWorldCup.Bet">
     <Position X="13" Y="2.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAA=</HashCode>
+      <HashCode>AAAAEAAAAAAAAAAAAAAAAACAAAwAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Models\Bet.cs</FileName>
     </TypeIdentifier>
-    <ShowAsAssociation>
-      <Property Name="Player" />
-    </ShowAsAssociation>
   </Class>
   <Class Name="NetsizeWorldCup.Message">
     <Position X="4" Y="2.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAEAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Models\Message.cs</FileName>
     </TypeIdentifier>
-    <ShowAsAssociation>
-      <Property Name="Author" />
-    </ShowAsAssociation>
   </Class>
   <Class Name="NetsizeWorldCup.Event">
     <Position X="17.5" Y="2.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Models\Event.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -67,22 +51,44 @@
   <Class Name="NetsizeWorldCup.Group">
     <Position X="8.5" Y="2.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>Group.cs</FileName>
+      <HashCode>AAAAEAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\Group.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="NetsizeWorldCup.Phase">
     <Position X="10.75" Y="2.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>Phase.cs</FileName>
+      <HashCode>AAABEAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\Phase.cs</FileName>
     </TypeIdentifier>
+  </Class>
+  <Class Name="NetsizeWorldCup.Models.ApplicationUser" Collapsed="true">
+    <Position X="5.75" Y="1" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAUAgACAAAAAAAAAAABAAAAAAAAAAAAAAAAABAAAA=</HashCode>
+      <FileName>Models\ApplicationUser.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Microsoft.AspNet.Identity.EntityFramework.IdentityUser" Collapsed="true">
+    <Position X="8.75" Y="0.75" Width="1.5" />
+    <TypeIdentifier />
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="NetsizeWorldCup.Ownership">
+    <Position X="6.25" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\Entity.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Owner" />
+    </ShowAsAssociation>
   </Class>
   <Interface Name="NetsizeWorldCup.IEntity" Collapsed="true">
     <Position X="22.25" Y="0.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>QAAAEAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>IEntity.cs</FileName>
+      <FileName>Models\IEntity.cs</FileName>
     </TypeIdentifier>
   </Interface>
   <Font Name="Segoe UI" Size="9" />
