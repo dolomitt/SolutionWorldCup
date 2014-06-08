@@ -36,7 +36,7 @@ namespace NetsizeWorldCup
                 // Less than one minute ago.
                 if (secDiff < 60)
                 {
-                    return "just now";
+                    return "Just now";
                 }
                 // B.
                 // Less than 2 minutes ago.

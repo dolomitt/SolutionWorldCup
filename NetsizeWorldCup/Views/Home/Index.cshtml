@@ -4,64 +4,83 @@
 
 <div class="row">
     <div class="col-md-4">
-        <section class="widget small">
+        <section class="widget">
             <header>
                 <h4>
-                    <i class="eicon-share"></i>
-                    Next Game @ViewBag.Test
+                    <i class="eicon-flag"></i>
+                    Next Game
                 </h4>
             </header>
             <div class="body">
-                <div id="feed" class="feed">
-                    <div class="wrapper">
-                        <div class="vertical-line"></div>
-                        <section class="feed-item">
-                            <div class="feed-item-body">
-                                <div class="text">
-                                    @ViewBag.NextGame.Local.DisplayName - @ViewBag.NextGame.Visitor.DisplayName<br />@ViewBag.NextGame.WinOdd / @ViewBag.NextGame.DrawOdd / @ViewBag.NextGame.LossOdd
-                                </div>
-                            </div>
-                        </section>
-                    </div>
-                </div>
+                <table class="table table-condensed table-images">
+                    <tbody>
+                        <tr>
+                            <td class="hidden-xs-portrait text-right">
+                                <img src="@ViewBag.NextGame.Local.FlagUrl" alt="">
+                            </td>
+                            <td class="hidden-xs-portrait text-center">
+                                <p>
+                                    @ViewBag.NextGame.Local.DisplayName - @ViewBag.NextGame.Visitor.DisplayName
+                                </p>
+                                <p>
+                                    @ViewBag.NextGame.WinOdd / @ViewBag.NextGame.DrawOdd / @ViewBag.NextGame.LossOdd
+                                </p>
+                            </td>
+                            <td class="hidden-xs-portrait">
+                                <img src="@ViewBag.NextGame.Visitor.FlagUrl" alt="">
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <blockquote>@ViewBag.Test</blockquote>
             </div>
         </section>
     </div>
-    <div class="col-md-8">
-        <section class="widget large">
+    @if (ViewBag.WeatherInfo != null)
+    {
+        <div class="col-md-4">
+            <section class="widget">
+                <header>
+                    <h4>
+                        <i class="eicon-adjust"></i>
+                        Weather in Paris
+                    </h4>
+                </header>
+                <ul class="news-list">
+                    <li>
+                        <img class="pull-left img-circle" alt="" src="@ViewBag.WeatherInfo.ImageUrl.Replace("/k/", "/c/")">
+                        <div class="news-item-info">
+                            <div class="comment">@ViewBag.WeatherInfo.Text</div>
+                        </div>
+                    </li>
+                </ul>
+            </section>
+        </div>
+    }
+</div>
+<div class="row">
+    <div class="col-md-10">
+        <section class="widget">
             <header>
                 <h4>
                     <i class="eicon-share"></i>
                     Feed
                 </h4>
             </header>
-            <div class="body">
-                <div id="feed" class="feed">
-                    <div class="wrapper">
-                        <div class="vertical-line"></div>
-                        @foreach (var item in ViewBag.Feeds)
-                        {
-                            <section class="feed-item">
-                                <div class="img-responsive pull-left">
-                                    <img src="@item.ImageUrl" style="width:75px" />
-                                </div>
-                                <div class="feed-item-body">
-                                    <div class="text">
-                                        <a href="@item.Url">@item.Title</a>
-                                    </div>
-                                    <div class="text">
-                                        @Html.Raw(item.Summary)
-                                    </div>
-                                    <div class="time pull-left">
-                                        @item.PublishedDate
-                                    </div>
-                                </div>
-                            </section>
-                        }
-                    </div>
-                </div>
-            </div>
+            <ul class="news-list">
+                @foreach (var item in ViewBag.Feeds)
+                {
+                    <li>
+                        <img class="pull-left img-circle" alt="" src="@item.ImageUrl">
+                        <div class="news-item-info">
+                            <div class="name">
+                                <a href="@item.Url">@item.Title</a>
+                            </div>
+                            <div class="comment">@item.PublishedDate: @Html.Raw(item.Summary.Replace("</p>", "").Replace("<p>", ""))</div>
+                        </div>
+                    </li>
+                }
+            </ul>
         </section>
     </div>
-
 </div>

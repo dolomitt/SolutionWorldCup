@@ -7,6 +7,12 @@ namespace NetsizeWorldCup.Controllers
 {
     public class BetController : BaseController
     {
+        public BetController()
+            : base()
+        {
+
+        }
+
         // POST: Bet/Create
         [HttpPost]
         [Authorize]
@@ -15,7 +21,9 @@ namespace NetsizeWorldCup.Controllers
             if (!User.Identity.IsAuthenticated)
                 return Json(new { Status = false });
 
-            var user = UserManager.FindById(User.Identity.GetUserId());
+            string currentUserId = User.Identity.GetUserId();
+
+            var user = db.Users.First<ApplicationUser>(u => u.Id == currentUserId);
             var game = db.Games.FirstOrDefault<Game>(g => g.ID == placedBet.GameId);
 
             if (game == null)
@@ -25,11 +33,16 @@ namespace NetsizeWorldCup.Controllers
 
             if (bet == null)
             {
-                db.Bets.Add(new Bet { Owner = user, Forecast = placedBet.Result, Game = game });
+                Bet newBet = new Bet { Owner = user, Forecast = placedBet.Result, Game = game, WinOdd = game.WinOdd, DrawOdd = game.DrawOdd, LossOdd = game.LossOdd };
+                db.Bets.Add(newBet);
             }
             else
             {
                 bet.Forecast = placedBet.Result;
+
+                bet.WinOdd = game.WinOdd; 
+                bet.DrawOdd = game.DrawOdd; 
+                bet.LossOdd = game.LossOdd;
             }
 
             db.SaveChanges();

@@ -16,7 +16,7 @@ namespace NetsizeWorldCup.Controllers
 {
     public abstract class BaseController : Controller
     {
-        protected ApplicationDbContext db;
+        protected ApplicationDbContext db { get; set; }
 
         protected ApplicationUserManager _userManager;
 
@@ -42,6 +42,7 @@ namespace NetsizeWorldCup.Controllers
     public class AccountController : BaseController
     {
         public AccountController()
+            : base()
         {
         }
 
@@ -109,14 +110,15 @@ namespace NetsizeWorldCup.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser() { 
-                    UserName = model.Email, 
-                    Email = model.Email, 
-                    ImageUrl = model.PictureUrl, 
-                    City = model.City, 
-                    Country = model.Country, 
-                    PhoneNumber = model.PhoneNumber, 
-                    TimeZoneInfoId = model.TimeZoneInfo 
+                var user = new ApplicationUser()
+                {
+                    UserName = model.Email,
+                    Email = model.Email,
+                    ImageUrl = model.PictureUrl,
+                    City = model.City,
+                    Country = model.Country,
+                    PhoneNumber = model.PhoneNumber,
+                    TimeZoneInfoId = model.TimeZoneInfo
                 };
 
                 IdentityResult result = await UserManager.CreateAsync(user, model.Password);
@@ -147,7 +149,7 @@ namespace NetsizeWorldCup.Controllers
         [AllowAnonymous]
         public async Task<ActionResult> ConfirmEmail(string userId, string code)
         {
-            if (userId == null || code == null) 
+            if (userId == null || code == null)
             {
                 return View("Error");
             }
@@ -207,13 +209,13 @@ namespace NetsizeWorldCup.Controllers
         {
             return View();
         }
-	
+
         //
         // GET: /Account/ResetPassword
         [AllowAnonymous]
         public ActionResult ResetPassword(string code)
         {
-            if (code == null) 
+            if (code == null)
             {
                 return View("Error");
             }
@@ -441,13 +443,13 @@ namespace NetsizeWorldCup.Controllers
                     if (result.Succeeded)
                     {
                         await SignInAsync(user, isPersistent: false);
-                        
+
                         // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=320771
                         // Send an email with this link
                         // string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
                         // var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
                         // SendEmail(user.Email, callbackUrl, "Confirm your account", "Please confirm your account by clicking this link");
-                        
+
                         return RedirectToLocal(returnUrl);
                     }
                 }
@@ -557,7 +559,8 @@ namespace NetsizeWorldCup.Controllers
 
         private class ChallengeResult : HttpUnauthorizedResult
         {
-            public ChallengeResult(string provider, string redirectUri) : this(provider, redirectUri, null)
+            public ChallengeResult(string provider, string redirectUri)
+                : this(provider, redirectUri, null)
             {
             }
 

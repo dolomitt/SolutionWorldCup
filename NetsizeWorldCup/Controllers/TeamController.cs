@@ -14,11 +14,16 @@ namespace NetsizeWorldCup.Controllers
 {
     public class TeamController : BaseController
     {
+        public TeamController()
+            : base()
+        {
+        }
+
         // GET: Team
         //[OutputCache(Duration = 2000)]
         public async Task<ActionResult> Index()
         {
-            return View(await db.Teams.OrderBy<Team, string>(t=>t.Name).ToListAsync());
+            return View(await db.Teams.OrderBy<Team, string>(t => t.Name).ToListAsync());
         }
 
         // GET: Team/Details/5

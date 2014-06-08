@@ -31,7 +31,10 @@ $(function(){
                 center: 'title',
                 right: 'next'
             },
-
+            timeFormat: 'HH:mm',
+            slotDuration: '00:60:00',
+            firstDay: 1,
+            lang: 'fr',
             selectable: false,
             selectHelper: true,
             select: function(start, end, allDay) {

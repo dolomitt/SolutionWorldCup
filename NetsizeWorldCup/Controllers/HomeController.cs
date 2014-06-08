@@ -11,18 +11,23 @@ using System.ServiceModel.Syndication;
 using System.Net;
 using System.Xml.Serialization;
 using System.IO;
+using Newtonsoft.Json;
 
 namespace NetsizeWorldCup.Controllers
 {
     public class HomeController : BaseController
     {
+        public HomeController()
+            : base()
+        { }
+
         Dictionary<string, Models.Betclic.Match> games;
 
         public ActionResult Index()
         {
             ViewBag.Feeds = GetLastFeeds();
             ViewBag.Test = GetLastOdds();
-
+            ViewBag.WeatherInfo = GetWeatherInfo();
 
             ViewBag.NextGame = db.Games.Include(j => j.Local).Include(j => j.Visitor).Where<Game>(m => m.StartDate > DateTime.UtcNow).OrderBy<Game, DateTime>(k => k.StartDate).First<Game>();
 
@@ -47,25 +52,77 @@ namespace NetsizeWorldCup.Controllers
             db.SaveChanges();
         }
 
+        public WeatherInfo GetWeatherInfo()
+        {
+            try
+            {
+                string fileName = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "App_Data", "weather.json");
+                string backupFileName = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "App_Data", "weather_backup.json");
+
+                //File already exists and requires update
+                if (System.IO.File.Exists(fileName) && System.IO.File.GetLastWriteTimeUtc(fileName) < DateTime.UtcNow.AddMinutes(-30))
+                {
+                    //Removing old backup
+                    if (System.IO.File.Exists(backupFileName))
+                        System.IO.File.Delete(backupFileName);
+
+                    //moving newer file to backup
+                    System.IO.File.Move(fileName, backupFileName);
+                }
+
+                //File didn't exist or has been moved to backup
+                if (!System.IO.File.Exists(fileName))
+                {
+                    using (WebClient client = new WebClient())
+                    {
+                        client.DownloadFile("http://api.wunderground.com/api/fca502fbc6701138/forecast/q/FR/Paris.json", fileName);
+                    }
+                }
+
+                if (System.IO.File.Exists(fileName))
+                {
+                    var weatherData = JsonConvert.DeserializeObject<NetsizeWorldCup.Models.WeatherApi.Rootobject>(System.IO.File.ReadAllText(fileName));
+
+                    WeatherInfo winfo = new WeatherInfo { ImageUrl = weatherData.forecast.txt_forecast.forecastday.First().icon_url, Text = weatherData.forecast.txt_forecast.forecastday.First().fcttext_metric };
+                    return winfo;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
         public List<FeedItem> GetLastFeeds()
         {
-            string url = "http://www.fifa.com/worldcup/news/rss.xml";
-            SyndicationFeed feed = null;
-
-            using (XmlReader reader = XmlReader.Create(url))
+            try
             {
-                feed = SyndicationFeed.Load(reader);
-            }
+                string url = "http://www.fifa.com/worldcup/news/rss.xml";
+                SyndicationFeed feed = null;
 
-            return feed.Items.Take<SyndicationItem>(5).Select<SyndicationItem, FeedItem>(
-                j => new FeedItem
+                using (XmlReader reader = XmlReader.Create(url))
                 {
-                    Title = j.Title.Text,
-                    Summary = j.Summary.Text,
-                    PublishedDate = j.PublishDate.LocalDateTime.GetPrettyDate(),
-                    Url = j.Links[0].GetAbsoluteUri().ToString(),
-                    ImageUrl = j.Links[1].GetAbsoluteUri().ToString()
-                }).ToList<FeedItem>();
+                    feed = SyndicationFeed.Load(reader);
+                }
+
+                return feed.Items.Take<SyndicationItem>(5).Select<SyndicationItem, FeedItem>(
+                    j => new FeedItem
+                    {
+                        Title = j.Title.Text,
+                        Summary = j.Summary.Text,
+                        PublishedDate = j.PublishDate.LocalDateTime.GetPrettyDate(),
+                        Url = j.Links[0].GetAbsoluteUri().ToString(),
+                        ImageUrl = j.Links[1].GetAbsoluteUri().ToString()
+                    }).ToList<FeedItem>();
+            }
+            catch
+            {
+                return new List<FeedItem>();
+            }
         }
 
 
@@ -119,7 +176,7 @@ namespace NetsizeWorldCup.Controllers
                 if (fileUpdated)
                     SetLastOdds();
 
-                return "Game Count = " + wcEvent.match.Count() + " - Odds updated at " + result.file_date.AddHours(1).ToString();
+                return "Odds updated " + result.file_date.AddHours(1).GetPrettyDate().ToString();
             }
             else
             {
@@ -135,5 +192,11 @@ namespace NetsizeWorldCup.Controllers
         public string ImageUrl { get; set; }
         public string PublishedDate { get; set; }
         public string Url { get; set; }
+    }
+
+    public class WeatherInfo
+    {
+        public string ImageUrl { get; set; }
+        public string Text { get; set; }
     }
 }

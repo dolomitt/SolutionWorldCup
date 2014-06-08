@@ -15,6 +15,10 @@ namespace NetsizeWorldCup.Controllers
 {
     public class GameController : BaseController
     {
+        public GameController()
+            : base()
+        { }
+
         // GET: Game
         public async Task<ActionResult> Index()
         {
@@ -26,7 +30,7 @@ namespace NetsizeWorldCup.Controllers
             else
                 ViewBag.CurrentTimeZoneInfo = TimeZoneInfo.Local;
 
-            return View(await db.Games.OrderBy<Game,DateTime>(j=>j.StartDate).ToListAsync());
+            return View(await db.Games.OrderBy<Game, DateTime>(j => j.StartDate).ToListAsync());
         }
 
         public async Task<ActionResult> Calendar()
@@ -43,10 +47,10 @@ namespace NetsizeWorldCup.Controllers
             if (user != null)
                 tzi = user.TimeZoneInfo;
 
-            foreach(Game i in db.Games.Include(j=>j.Local).Include(j=>j.Visitor))
+            foreach (Game i in db.Games.Include(j => j.Local).Include(j => j.Visitor))
                 events.Add(new CalendarEvent { start = i.StartDate.UtcToLocal(tzi).ToString("yyyy-MM-dd HH:mm"), end = i.EndDate.UtcToLocal(tzi).ToString("yyyy-MM-dd HH:mm"), title = i.DisplayName, allDay = false });
 
-            return Json(events, JsonRequestBehavior.AllowGet); 
+            return Json(events, JsonRequestBehavior.AllowGet);
         }
 
         // GET: Game/Details/5
