@@ -185,19 +185,19 @@ namespace NetsizeWorldCup
                 new Team { Name = "Honduras", Group = groupE, FlagUrl = "http://img.fifa.com/images/flags/4/hon.png" },
 
                 new Team { Name = "Argentina", Group = groupF, FlagUrl = "http://img.fifa.com/images/flags/4/arg.png" },
-                new Team { Name = "Bosnia and Herzegovina", Group = groupF, FlagUrl = "http://img.fifa.com/images/flags/4/bih.png" },
+                new Team { Name = "Bosnia-Herzegovina", Group = groupF, FlagUrl = "http://img.fifa.com/images/flags/4/bih.png" },
                 new Team { Name = "Iran", Group = groupF, FlagUrl = "http://img.fifa.com/images/flags/4/irn.png" },
                 new Team { Name = "Nigeria", Group = groupF, FlagUrl = "http://img.fifa.com/images/flags/4/nga.png" },
 
                 new Team { Name = "Germany", Group = groupG, FlagUrl = "http://img.fifa.com/images/flags/4/ger.png" },
                 new Team { Name = "Portugal", Group = groupG, FlagUrl = "http://img.fifa.com/images/flags/4/por.png" },
                 new Team { Name = "Ghana", Group = groupG, FlagUrl = "http://img.fifa.com/images/flags/4/gha.png" },
-                new Team { Name = "Usa", Group = groupG, FlagUrl = "http://img.fifa.com/images/flags/4/usa.png" },
+                new Team { Name = "United States", Group = groupG, FlagUrl = "http://img.fifa.com/images/flags/4/United States.png" },
 
                 new Team { Name = "Belgium", Group = groupH, FlagUrl = "http://img.fifa.com/images/flags/4/bel.png" },
                 new Team { Name = "Algeria", Group = groupH, FlagUrl = "http://img.fifa.com/images/flags/4/alg.png" },
                 new Team { Name = "Russia", Group = groupH, FlagUrl = "http://img.fifa.com/images/flags/4/rus.png" },
-                new Team { Name = "Korea Republic", Group = groupH, FlagUrl = "http://img.fifa.com/images/flags/4/kor.png" }};
+                new Team { Name = "South Korea", Group = groupH, FlagUrl = "http://img.fifa.com/images/flags/4/kor.png" }};
 
             teams.ForEach(g => context.Teams.Add(g));
             context.SaveChanges();
@@ -205,7 +205,7 @@ namespace NetsizeWorldCup
             var games = new List<Game> {
                     CreateGame(context, phaseGroup, "Arena Corinthians","2014-06-12 20:00:00","Brazil","Croatia"),
                     CreateGame(context, phaseGroup, "Estadio Mineirao","2014-06-17 16:00:00","Belgium","Algeria"),
-                    CreateGame(context, phaseGroup, "Estadio Beira-Rio","2014-06-22 19:00:00","Korea Republic","Algeria"),
+                    CreateGame(context, phaseGroup, "Estadio Beira-Rio","2014-06-22 19:00:00","South Korea","Algeria"),
                     CreateGame(context, phaseGroup, "Arena Pantanal","2014-06-13 22:00:00","Chile","Australia"),
                     CreateGame(context, phaseGroup, "Estadio Beira-Rio","2014-06-25 16:00:00","Nigeria","Argentina"),
                     CreateGame(context, phaseGroup, "Estadio das Dunas","2014-06-13 16:00:00","Mexico","Cameroon"),
@@ -221,8 +221,8 @@ namespace NetsizeWorldCup
                     CreateGame(context, phaseGroup, "Arena da Baixada","2014-06-23 16:00:00","Australia","Spain"),
                     CreateGame(context, phaseGroup, "Estadio Mineirao","2014-06-24 16:00:00","Costa Rica","England"),
                     CreateGame(context, phaseGroup, "Estadio das Dunas","2014-06-24 16:00:00","Italy","Uruguay"),
-                    CreateGame(context, phaseGroup, "Arena Fonte Nova","2014-06-25 16:00:00","Bosnia and Herzegovina","Iran"),
-                    CreateGame(context, phaseGroup, "Arena Pernambuco","2014-06-26 16:00:00","USA","Germany"),
+                    CreateGame(context, phaseGroup, "Arena Fonte Nova","2014-06-25 16:00:00","Bosnia-Herzegovina","Iran"),
+                    CreateGame(context, phaseGroup, "Arena Pernambuco","2014-06-26 16:00:00","United States","Germany"),
                     CreateGame(context, phaseGroup, "Estadio Nacional","2014-06-26 16:00:00","Portugal","Ghana"),
                     CreateGame(context, phaseGroup, "Arena Fonte Nova","2014-06-13 19:00:00","Spain","Netherlands"),
                     CreateGame(context, phaseGroup, "Estadio Castelao","2014-06-14 19:00:00","Uruguay","Costa Rica"),
@@ -235,19 +235,19 @@ namespace NetsizeWorldCup
                     CreateGame(context, phaseGroup, "Estadio Castelao","2014-06-21 19:00:00","Germany","Ghana"),
                     CreateGame(context, phaseGroup, "Arena Pantanal","2014-06-24 20:00:00","Japan","Colombia"),
                     CreateGame(context, phaseGroup, "Arena Amazonia","2014-06-25 20:00:00","Honduras","Switzerland"),
-                    CreateGame(context, phaseGroup, "Arena Corinthians","2014-06-26 20:00:00","Korea Republic","Belgium"),
+                    CreateGame(context, phaseGroup, "Arena Corinthians","2014-06-26 20:00:00","South Korea","Belgium"),
                     CreateGame(context, phaseGroup, "Estadio Nacional","2014-06-23 20:00:00","Cameroon","Brazil"),
                     CreateGame(context, phaseGroup, "Arena Pernambuco","2014-06-23 20:00:00","Croatia","Mexico"),
                     CreateGame(context, phaseGroup, "Estadio Castelao","2014-06-24 20:00:00","Greece","Ivory Coast"),
                     CreateGame(context, phaseGroup, "Estádio Jornalista Mário Filho","2014-06-25 20:00:00","Ecuador","France"),
                     CreateGame(context, phaseGroup, "Arena da Baixada","2014-06-26 20:00:00","Algeria","Russia"),
                     CreateGame(context, phaseGroup, "Arena Amazonia","2014-06-14 22:00:00","England","Italy"),
-                    CreateGame(context, phaseGroup, "Arena Pantanal","2014-06-17 22:00:00","Russia","Korea Republic"),
+                    CreateGame(context, phaseGroup, "Arena Pantanal","2014-06-17 22:00:00","Russia","South Korea"),
                     CreateGame(context, phaseGroup, "Arena Amazonia","2014-06-18 22:00:00","Cameroon","Croatia"),
-                    CreateGame(context, phaseGroup, "Arena Pantanal","2014-06-21 22:00:00","Nigeria","Bosnia and Herzegovina"),
-                    CreateGame(context, phaseGroup, "Arena Amazonia","2014-06-22 22:00:00","USA","Portugal"),
-                    CreateGame(context, phaseGroup, "Estádio Jornalista Mário Filho","2014-06-15 22:00:00","Argentina","Bosnia and Herzegovina"),
-                    CreateGame(context, phaseGroup, "Estadio das Dunas","2014-06-16 22:00:00","Ghana","Usa"),
+                    CreateGame(context, phaseGroup, "Arena Pantanal","2014-06-21 22:00:00","Nigeria","Bosnia-Herzegovina"),
+                    CreateGame(context, phaseGroup, "Arena Amazonia","2014-06-22 22:00:00","United States","Portugal"),
+                    CreateGame(context, phaseGroup, "Estádio Jornalista Mário Filho","2014-06-15 22:00:00","Argentina","Bosnia-Herzegovina"),
+                    CreateGame(context, phaseGroup, "Estadio das Dunas","2014-06-16 22:00:00","Ghana","United States"),
                     CreateGame(context, phaseGroup, "Estadio das Dunas","2014-06-19 22:00:00","Japan","Greece"),
                     CreateGame(context, phaseGroup, "Arena da Baixada","2014-06-20 22:00:00","Honduras","Ecuador"),
                     CreateGame(context, phaseGroup, "Arena Pernambuco","2014-06-15 01:00:00","Ivory Coast","Japan")

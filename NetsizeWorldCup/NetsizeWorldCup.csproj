@@ -107,6 +107,10 @@
       <Private>True</Private>
       <HintPath>..\..\..\..\..\..\..\Repositories\NugetPackages\Antlr.3.4.1.9004\lib\Antlr3.Runtime.dll</HintPath>
     </Reference>
+    <Reference Include="XMLSoccerCOM, Version=0.9.6.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Libraries\XMLSoccerCOM.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="EntityFramework">
@@ -165,6 +169,7 @@
     <Compile Include="Controllers\TeamController.cs" />
     <Compile Include="DateTimeHelper.cs" />
     <Compile Include="GameContext.cs" />
+    <Compile Include="Models\BetClic.cs" />
     <Compile Include="Models\Group.cs" />
     <Compile Include="Models\ApplicationUser.cs" />
     <Compile Include="Models\IEntity.cs" />
@@ -437,6 +442,9 @@
     <Content Include="Content\lib\nvd3\LICENSE.md" />
     <Content Include="Content\lib\parsley\parsley-license.md" />
     <Content Include="DomainDiagram.cd" />
+    <Content Include="XMLFile1.xml">
+      <SubType>Designer</SubType>
+    </Content>
     <None Include="Properties\PublishProfiles\nswc2014 - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\nswc2014 - Web Deploy.pubxml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />

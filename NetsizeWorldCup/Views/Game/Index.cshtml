@@ -21,11 +21,11 @@
                     <tr>
                         <th class="hidden-xs-portrait">#</th>
                         <th class="hidden-xs-portrait">Date</th>
-                        <th></th>
+                        <th class="hidden-xs-portrait"></th>
                         <th class="text-right">Local</th>
                         <th class="text-center">Result</th>
                         <th>Visitor</th>
-                        <th></th>
+                        <th class="hidden-xs-portrait"></th>
                         <th class="hidden-xs-portrait">Location</th>
                     </tr>
                 </thead>
@@ -40,7 +40,7 @@
                                 @item.StartDate.UtcToLocal((TimeZoneInfo)ViewBag.CurrentTimeZoneInfo)
                                 @*@Html.DisplayFor(modelItem => item.StartDate)*@
                             </td>
-                            <td class="text-right">
+                            <td class="text-right hidden-xs-portrait">
                                 <img src="@item.Local.FlagUrl" style="box-shadow: 0px 0px 10px #888;border-radius: 5px;" />
                             </td>
                             <td class="text-right">
@@ -49,20 +49,20 @@
                             <td class="text-center">
                                 <div class="btn-group" data-toggle="buttons">
                                     <label class="btn btn-success">
-                                        <input type="radio" name="options" id="option1"> 1
+                                        <input type="radio" name="options" id="option1"> @item.WinOdd
                                     </label>
                                     <label class="btn btn-success">
-                                        <input type="radio" name="options" id="option2"> X
+                                        <input type="radio" name="options" id="option2"> @item.DrawOdd
                                     </label>
                                     <label class="btn btn-success">
-                                        <input type="radio" name="options" id="option3"> 2
+                                        <input type="radio" name="options" id="option3"> @item.LossOdd
                                     </label>
                                 </div>
                             </td>
                             <td>
                                 @Html.DisplayFor(modelItem => item.Visitor.Name)
                             </td>
-                            <td>
+                            <td class="hidden-xs-portrait">
                                 <img src="@item.Visitor.FlagUrl" style="box-shadow: 0px 0px 10px #888;border-radius: 5px;" />
                             </td>
                             <td class="hidden-xs-portrait">
