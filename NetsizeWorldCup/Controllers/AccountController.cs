@@ -31,13 +31,16 @@ namespace NetsizeWorldCup.Controllers
                 _userManager = value;
             }
         }
+
+        public BaseController()
+        {
+            db = new ApplicationDbContext();
+        }
     }
 
     [Authorize]
     public class AccountController : BaseController
     {
-        
-
         public AccountController()
         {
         }

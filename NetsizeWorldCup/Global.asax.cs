@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NetsizeWorldCup.Models;
+using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
@@ -17,6 +18,15 @@ namespace NetsizeWorldCup
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
+
+            //// Initializes and seeds the database.
+            Database.SetInitializer<ApplicationDbContext>(new ApplicationDbInitializer());
+
+            // Forces initialization of database on model changes.
+            using (var context = new ApplicationDbContext())
+            {
+                context.Database.Initialize(force: true);
+            }
         }
     }
 }

@@ -75,13 +75,20 @@ namespace NetsizeWorldCup.Controllers
             bool fileUpdated = true;
 
             string fileName = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "App_Data", "odds.xml");
+            string backupFileName = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "App_Data", "odds_backup.xml");
 
 
             //File already exists and requires update
             if (System.IO.File.Exists(fileName) && System.IO.File.GetLastWriteTimeUtc(fileName) < DateTime.UtcNow.AddMinutes(-15))
             {
                 fileUpdated = true;
-                System.IO.File.Move(fileName, System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "App_Data", "odds_backup.xml"));
+
+                //Removing old backup
+                if (System.IO.File.Exists(backupFileName))
+                    System.IO.File.Delete(backupFileName);
+
+                //moving newer file to backup
+                System.IO.File.Move(fileName, backupFileName);
             }
 
             //File didn't exist or has been moved to backup

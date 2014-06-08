@@ -1,11 +1,5 @@
-﻿using Microsoft.AspNet.Identity;
-using Microsoft.Owin;
-using NetsizeWorldCup.Models;
+﻿using Microsoft.Owin;
 using Owin;
-using System.Web;
-using Microsoft.AspNet.Identity.Owin;
-using Microsoft.Owin.Security;
-using Microsoft.Owin;
 
 [assembly: OwinStartupAttribute(typeof(NetsizeWorldCup.Startup))]
 namespace NetsizeWorldCup
