@@ -128,59 +128,78 @@ namespace NetsizeWorldCup.Controllers
 
         public string GetLastOdds()
         {
-            NetsizeWorldCup.Models.Betclic.sports result = null;
-            bool fileUpdated = true;
-
-            string fileName = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "App_Data", "odds.xml");
-            string backupFileName = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "App_Data", "odds_backup.xml");
-
-
-            //File already exists and requires update
-            if (System.IO.File.Exists(fileName) && System.IO.File.GetLastWriteTimeUtc(fileName) < DateTime.UtcNow.AddMinutes(-15))
+            try
             {
-                fileUpdated = true;
+                NetsizeWorldCup.Models.Betclic.sports result = null;
+                bool fileUpdated = true;
 
-                //Removing old backup
-                if (System.IO.File.Exists(backupFileName))
-                    System.IO.File.Delete(backupFileName);
+                string fileName = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "App_Data", "odds.xml");
+                string backupFileName = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "App_Data", "odds_backup.xml");
 
-                //moving newer file to backup
-                System.IO.File.Move(fileName, backupFileName);
-            }
 
-            //File didn't exist or has been moved to backup
-            if (!System.IO.File.Exists(fileName))
-            {
-                using (WebClient client = new WebClient())
+                //File already exists and requires update
+                if (System.IO.File.Exists(fileName) && System.IO.File.GetLastWriteTimeUtc(fileName) < DateTime.UtcNow.AddMinutes(-15))
                 {
-                    client.DownloadFile("http://xml.cdn.betclic.com/odds_en.xml", fileName);
-                }
-            }
+                    fileUpdated = true;
 
-            //File has been correctly downloaded
-            if (System.IO.File.Exists(fileName))
-            {
-                XmlSerializer serializer = new XmlSerializer(typeof(NetsizeWorldCup.Models.Betclic.sports));
+                    //Removing old backup
+                    if (System.IO.File.Exists(backupFileName))
+                        System.IO.File.Delete(backupFileName);
 
-                using (StreamReader reader = new StreamReader(fileName))
-                {
-                    result = (NetsizeWorldCup.Models.Betclic.sports)serializer.Deserialize(reader);
+                    //moving newer file to backup
+                    System.IO.File.Move(fileName, backupFileName);
                 }
 
-                var sport = result.sport.First(s => s.name == "Football");
-                var wcEvent = sport.@event.First(e => e.name == "World Cup");
+                //File didn't exist or has been moved to backup
+                if (!System.IO.File.Exists(fileName))
+                {
+                    try
+                    {
+                        GetOdds(fileName);
+                    }
+                    catch (System.IO.IOException ioEx)
+                    {
+                        GetOdds(fileName);
+                    }
+                }
 
-                games = wcEvent.match.ToDictionary<Models.Betclic.Match, string>(i => i.name);
+                //File has been correctly downloaded
+                if (System.IO.File.Exists(fileName))
+                {
+                    XmlSerializer serializer = new XmlSerializer(typeof(NetsizeWorldCup.Models.Betclic.sports));
 
-                //We had an update so we need to reset the db
-                if (fileUpdated)
-                    SetLastOdds();
+                    using (StreamReader reader = new StreamReader(fileName))
+                    {
+                        result = (NetsizeWorldCup.Models.Betclic.sports)serializer.Deserialize(reader);
+                    }
 
-                return "Odds updated " + result.file_date.AddHours(1).GetPrettyDate().ToString();
+                    var sport = result.sport.First(s => s.name == "Football");
+                    var wcEvent = sport.@event.First(e => e.name == "World Cup");
+
+                    games = wcEvent.match.ToDictionary<Models.Betclic.Match, string>(i => i.name);
+
+                    //We had an update so we need to reset the db
+                    if (fileUpdated)
+                        SetLastOdds();
+
+                    return "Odds updated " + result.file_date.AddHours(1).GetPrettyDate().ToString();
+                }
+                else
+                {
+                    return "failure";
+                }
             }
-            else
+            catch
             {
                 return "failure";
+            }
+        }
+
+        public static void GetOdds(string filename)
+        {
+            using (WebClient client = new WebClient())
+            {
+                client.DownloadFile("http://xml.cdn.betclic.com/odds_en.xml", filename);
             }
         }
     }

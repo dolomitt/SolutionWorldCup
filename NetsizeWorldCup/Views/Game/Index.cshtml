@@ -4,42 +4,40 @@
     ViewBag.Title = "Games";
 }
 
-<div class="col-md-10 col-sm-8">
+<div class="col-md-12 col-sm-12">
     <section class="widget">
         <header>
             <h4>
                 <i class="fa fa-file-alt"></i>
                 Current Games
             </h4>
-            <div class="actions hidden-xs-portrait">
-                <input id="search" type="search" placeholder="Search">
-            </div>
         </header>
         <div class="body">
+            <blockquote>You can bet on the next games to be played - This is a classic 1 X 2 (Local, Draw, Visitor) - Odds are downloaded from betclic</blockquote>
             <table class="table table-hover table-condensed table-images">
                 <thead>
                     <tr>
-                        <th class="hidden-xs-portrait">#</th>
-                        <th class="hidden-xs-portrait">Date</th>
-                        <th class="hidden-xs-portrait"></th>
+                        <th class="hidden-md hidden-sm hidden-xs">#</th>
+                        <th class="hidden-md hidden-sm hidden-xs">Date</th>
+                        <th class="hidden-md hidden-sm hidden-xs"></th>
                         <th class="text-right">Local</th>
                         <th class="text-center">Result</th>
                         <th>Visitor</th>
-                        <th class="hidden-xs-portrait"></th>
-                        <th class="hidden-xs-portrait">Location</th>
+                        <th class="hidden-md hidden-sm hidden-xs"></th>
+                        <th class="hidden-md hidden-sm hidden-xs">Location</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach (var item in Model)
                     {
                         <tr>
-                            <td class="hidden-xs-portrait" style="vertical-align: middle">
+                            <td class="hidden-md hidden-sm hidden-xs" style="vertical-align: middle">
                                 @Html.DisplayFor(modelItem => item.ID)
                             </td>
-                            <td class="hidden-xs-portrait" style="vertical-align: middle">
+                            <td class="hidden-md hidden-sm hidden-xs" style="vertical-align: middle">
                                 @item.StartDate.UtcToLocal((TimeZoneInfo)ViewBag.CurrentTimeZoneInfo).ToShortDateString() @item.StartDate.UtcToLocal((TimeZoneInfo)ViewBag.CurrentTimeZoneInfo).ToShortTimeString()
                             </td>
-                            <td class="text-right hidden-xs-portrait" style="vertical-align: middle">
+                            <td class="text-right hidden-md hidden-sm hidden-xs" style="vertical-align: middle">
                                 <img src="@item.Local.FlagUrl" style="box-shadow: 0px 0px 10px #888;border-radius: 5px;" />
                             </td>
                             <td class="text-right" style="vertical-align: middle">
@@ -47,24 +45,24 @@
                             </td>
                             <td class="text-center" style="vertical-align: middle">
                                 <div class="btn-group" data-toggle="buttons">
-                                    <label class="btn btn-success" onclick="return SetBet(@item.ID, 1)" id="btnbet_1_@item.ID">
-                                        <input type="radio" name="options" id="option1">@item.WinOdd
+                                    <label class="@(ViewBag.UserBets != null && ViewBag.UserBets.Contains(item.ID + "_" + 1) ? "btn btn-danger active" : "btn btn-success")"  onclick="return SetBet(@item.ID, 1)" id="btnbet_1_@item.ID">
+                                        @item.WinOdd
                                     </label>
-                                    <label class="btn btn-success" onclick="return SetBet(@item.ID, 2)" id="btnbet_2_@item.ID">
-                                        <input type="radio" name="options" id="option2">@item.DrawOdd
+                                    <label class="@(ViewBag.UserBets != null && ViewBag.UserBets.Contains(item.ID + "_" + 2) ? "btn btn-danger active" : "btn btn-success")" onclick="return SetBet(@item.ID, 2)" id="btnbet_2_@item.ID">
+                                        @item.DrawOdd
                                     </label>
-                                    <label class="btn btn-success" onclick="return SetBet(@item.ID, 3)" id="btnbet_3_@item.ID">
-                                        <input type="radio" name="options" id="option3">@item.LossOdd
+                                    <label class="@(ViewBag.UserBets != null && ViewBag.UserBets.Contains(item.ID + "_" + 3) ? "btn btn-danger active" : "btn btn-success")" onclick="return SetBet(@item.ID, 3)" id="btnbet_3_@item.ID">
+                                        @item.LossOdd
                                     </label>
                                 </div>
                             </td>
                             <td style="vertical-align: middle">
                                 @Html.DisplayFor(modelItem => item.Visitor.Name)
                             </td>
-                            <td class="hidden-xs-portrait" style="vertical-align: middle">
+                            <td class="hidden-md hidden-sm hidden-xs" style="vertical-align: middle">
                                 <img src="@item.Visitor.FlagUrl" style="box-shadow: 0px 0px 10px #888;border-radius: 5px;" />
                             </td>
-                            <td class="hidden-xs-portrait" style="vertical-align: middle">
+                            <td class="hidden-md hidden-sm hidden-xs" style="vertical-align: middle">
                                 @Html.DisplayFor(modelItem => item.Location)
                             </td>
                         </tr>
@@ -74,19 +72,3 @@
         </div>
     </section>
 </div>
-
-@section Scripts
-{
-    <script language="javascript">
-        function SetBet(gameId, result) {
-            $.post("Bet/Place", { GameId: gameId, Result: result },
-                function () {
-                    var btnId = '#btnbet_' + result + '_' + gameId;
-                    $(btnId).removeClass("btn-success active");
-                    $(btnId).addClass("btn-danger active");
-                })
-            .done(function () {})
-            .fail(function () { alert("An error occured - Please refresh"); });
-        }
-    </script>
-}

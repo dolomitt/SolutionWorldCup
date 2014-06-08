@@ -22,13 +22,16 @@ namespace NetsizeWorldCup.Controllers
         // GET: Game
         public async Task<ActionResult> Index()
         {
-            ViewBag.UserId = User.Identity.GetUserId();
-            var user = this.UserManager.FindById<ApplicationUser, string>(User.Identity.GetUserId());
+            string currentUserId = User.Identity.GetUserId();
+            var user = db.Users.FirstOrDefault<ApplicationUser>(u => u.Id == currentUserId);
 
             if (user != null)
                 ViewBag.CurrentTimeZoneInfo = user.TimeZoneInfo;
             else
                 ViewBag.CurrentTimeZoneInfo = TimeZoneInfo.Local;
+
+            if (User.Identity.IsAuthenticated && user != null)
+                ViewBag.UserBets = db.Bets.Where<Bet>(b => b.Owner.Id == currentUserId).Select<Bet, string>(b => b.Game.ID + "_" + b.Forecast).ToList<string>();
 
             return View(await db.Games.OrderBy<Game, DateTime>(j => j.StartDate).ToListAsync());
         }

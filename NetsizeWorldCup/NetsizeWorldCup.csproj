@@ -40,9 +40,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="CGurus.Weather.WundergroundAPI">
-      <HintPath>..\..\..\..\..\..\..\Repositories\NugetPackages\WUnderground.Net.1.0.2\lib\CGurus.Weather.WundergroundAPI.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="RestSharp">
       <HintPath>..\..\..\..\..\..\..\Repositories\NugetPackages\RestSharp.104.1\lib\net4\RestSharp.dll</HintPath>
@@ -208,7 +205,6 @@
     <Content Include="Content\styles\chosen-sprite.png" />
     <Content Include="fonts\fontello\css\fontello.css" />
     <Content Include="fonts\fontello\font\fontello.svg" />
-    <Content Include="fonts\fontello\LICENSE.txt" />
     <Content Include="fonts\font-awesome\fontawesome-webfont.svg" />
     <Content Include="fonts\glyphicons\glyphicons-halflings-regular.svg" />
     <Content Include="Content\styles\lib\bootstrap-switch.css" />
@@ -446,7 +442,7 @@
     <Content Include="Content\lib\jquery-pjax\README.md" />
     <Content Include="Content\lib\nvd3\LICENSE.md" />
     <Content Include="Content\lib\parsley\parsley-license.md" />
-    <Content Include="DomainDiagram.cd" />
+    <None Include="DomainDiagram.cd" />
     <None Include="Properties\PublishProfiles\nswc2014 - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\nswc2014 - Web Deploy.pubxml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
@@ -515,7 +511,9 @@
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
     <Content Include="fonts\glyphicons-halflings-regular.ttf" />
     <Content Include="fonts\glyphicons-halflings-regular.eot" />
-    <Content Include="packages.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

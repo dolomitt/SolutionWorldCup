@@ -27,3 +27,7 @@ _ReSharper*/
 [Tt]est[Rr]esult*
 *.vssscc
 $tf*/
+odds.xml
+odds_backup.xml
+weather.json
+weather_backup.json

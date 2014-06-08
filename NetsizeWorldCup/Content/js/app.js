@@ -31,6 +31,29 @@ window.colors = function(){
     return d3.scale.ordinal().range(COLOR_VALUES);
 }();
 
+function SetBet(gameId, result) {
+    $.post("Bet/Place", { GameId: gameId, Result: result },
+        function () {
+            var btnId1 = '#btnbet_1_' + gameId;
+            var btnId2 = '#btnbet_2_' + gameId;
+            var btnId3 = '#btnbet_3_' + gameId;
+
+            $(btnId1).removeClass("btn-danger active");
+            $(btnId1).addClass("btn-success");
+
+            $(btnId2).removeClass("btn-danger active");
+            $(btnId2).addClass("btn-success");
+
+            $(btnId3).removeClass("btn-danger active");
+            $(btnId3).addClass("btn-success");
+
+            var btnId = '#btnbet_' + result + '_' + gameId;
+            $(btnId).addClass("btn-danger active");
+        })
+    .done(function () { })
+    .fail(function () { alert("An error occured - Please refresh"); });
+}
+
 function keyColor(d, i) {
     if (!window.colors){
         window.colors = function(){

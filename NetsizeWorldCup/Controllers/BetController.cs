@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Web.Mvc;
 using Microsoft.AspNet.Identity;
+using System;
 
 namespace NetsizeWorldCup.Controllers
 {
@@ -27,6 +28,10 @@ namespace NetsizeWorldCup.Controllers
             var game = db.Games.FirstOrDefault<Game>(g => g.ID == placedBet.GameId);
 
             if (game == null)
+                return Json(new { Status = false });
+
+            //game start date is past
+            if (game.StartDate < DateTime.UtcNow)
                 return Json(new { Status = false });
 
             Bet bet = db.Bets.FirstOrDefault<Bet>(b => b.Owner.Id == user.Id && b.Game.ID == game.ID);
