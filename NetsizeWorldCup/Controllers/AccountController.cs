@@ -109,7 +109,16 @@ namespace NetsizeWorldCup.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser() { UserName = model.Email, Email = model.Email };
+                var user = new ApplicationUser() { 
+                    UserName = model.Email, 
+                    Email = model.Email, 
+                    ImageUrl = model.PictureUrl, 
+                    City = model.City, 
+                    Country = model.Country, 
+                    PhoneNumber = model.PhoneNumber, 
+                    TimeZoneInfoId = model.TimeZoneInfo 
+                };
+
                 IdentityResult result = await UserManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {

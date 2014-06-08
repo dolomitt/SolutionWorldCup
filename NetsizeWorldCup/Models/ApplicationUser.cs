@@ -23,6 +23,9 @@ namespace NetsizeWorldCup.Models
 
         public string ImageUrl { get; set; }
 
+        public string City { get; set; }
+        public string Country { get; set; }
+
         public string TimeZoneInfoId { get; set; }
 
         private TimeZoneInfo _timeZone;
@@ -34,6 +37,9 @@ namespace NetsizeWorldCup.Models
             {
                 if (_timeZone == null)
                     _timeZone = TimeZoneInfo.GetSystemTimeZones().FirstOrDefault<TimeZoneInfo>(i => i.Id == TimeZoneInfoId);
+
+                if (_timeZone == null)
+                    return TimeZoneInfo.Local;
 
                 return _timeZone;
             }

@@ -4,7 +4,7 @@
     ViewBag.Title = "Games";
 }
 
-<div class="col-md-10">
+<div class="col-md-10 col-sm-8">
     <section class="widget">
         <header>
             <h4>
@@ -16,7 +16,7 @@
             </div>
         </header>
         <div class="body">
-            <table class="table table-hover">
+            <table class="table table-hover table-condensed">
                 <thead>
                     <tr>
                         <th class="hidden-xs-portrait">#</th>
@@ -33,45 +33,57 @@
                     @foreach (var item in Model)
                     {
                         <tr>
-                            <td class="hidden-xs-portrait">
+                            <td class="hidden-xs-portrait" style="vertical-align: middle">
                                 @Html.DisplayFor(modelItem => item.ID)
                             </td>
-                            <td class="hidden-xs-portrait">
-                                @item.StartDate.UtcToLocal((TimeZoneInfo)ViewBag.CurrentTimeZoneInfo)
+                            <td class="hidden-xs-portrait" style="vertical-align: middle">
+                                @item.StartDate.UtcToLocal((TimeZoneInfo)ViewBag.CurrentTimeZoneInfo).ToShortDateString() @item.StartDate.UtcToLocal((TimeZoneInfo)ViewBag.CurrentTimeZoneInfo).ToShortTimeString()
                                 @*@Html.DisplayFor(modelItem => item.StartDate)*@
                             </td>
-                            <td class="text-right hidden-xs-portrait">
+                            <td class="text-right hidden-xs-portrait" style="vertical-align: middle">
                                 <img src="@item.Local.FlagUrl" style="box-shadow: 0px 0px 10px #888;border-radius: 5px;" />
                             </td>
-                            <td class="text-right">
+                            <td class="text-right" style="vertical-align: middle">
                                 @Html.DisplayFor(modelItem => item.Local.Name)
                             </td>
-                            <td class="text-center">
+                            <td class="text-center" style="vertical-align: middle">
                                 <div class="btn-group" data-toggle="buttons">
                                     <label class="btn btn-success">
-                                        <input type="radio" name="options" id="option1"> @item.WinOdd
+                                        <input type="radio" name="options" id="option1" onclick="return SetBet(@item.ID, 1)">@item.WinOdd
                                     </label>
                                     <label class="btn btn-success">
-                                        <input type="radio" name="options" id="option2"> @item.DrawOdd
+                                        <input type="radio" name="options" id="option2" onclick="return SetBet(@item.ID, 2)">@item.DrawOdd
                                     </label>
                                     <label class="btn btn-success">
-                                        <input type="radio" name="options" id="option3"> @item.LossOdd
+                                        <input type="radio" name="options" id="option3" onclick="return SetBet(@item.ID, 3)">@item.LossOdd
                                     </label>
                                 </div>
                             </td>
-                            <td>
+                            <td style="vertical-align: middle">
                                 @Html.DisplayFor(modelItem => item.Visitor.Name)
-                            </td>
-                            <td class="hidden-xs-portrait">
+                                </td>
+                            <td class="hidden-xs-portrait" style="vertical-align: middle">
                                 <img src="@item.Visitor.FlagUrl" style="box-shadow: 0px 0px 10px #888;border-radius: 5px;" />
                             </td>
-                            <td class="hidden-xs-portrait">
+                            <td class="hidden-xs-portrait" style="vertical-align: middle">
                                 @Html.DisplayFor(modelItem => item.Location)
                             </td>
-                        </tr>
+</tr>
                     }
                 </tbody>
             </table>
         </div>
     </section>
 </div>
+
+@section Scripts
+{
+    <script language="javascript">
+        function SetBet(gameId, result) {
+            $.post("Bet/Place", { GameId: gameId, Result: result },
+                function () { alert("success 1"); })
+            .done(function () { alert("success 2"); })
+            .fail(function () { alert("error"); });
+        }
+    </script>
+}

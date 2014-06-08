@@ -23,6 +23,7 @@
                                 @Html.DisplayNameFor(model => model.UserName)
                             </th>
                             <th>TimeZone</th>
+                            <th>Daylight Saving</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -38,6 +39,7 @@
                                 <td>
                                     @item.TimeZoneInfo.DisplayName
                                 </td>
+                                <td>@(item.TimeZoneInfo.IsDaylightSavingTime(DateTime.Now)?"Yes":"No")</td>
                             </tr>
                         }
                     </tbody>

@@ -4,8 +4,9 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@ViewBag.Title - NS WC2014</title>
-    @Styles.Render("~/css")
-    @Scripts.Render("~/bundles/modernizr")
+    <link href="/Content/styles/application.css" rel="stylesheet">
+    @*@Styles.Render("~/css")
+    @Scripts.Render("~/bundles/modernizr")*@
 
 </head>
 <body class="background-dark">
@@ -66,7 +67,7 @@
                         <ul id="account-menu" class="dropdown-menu account" role="menu">
                             <li role="presentation" class="account-picture">
                                 <img src="img/2.jpg" alt="">
-                                Philip Daineka
+                                @User.Identity.Name
                             </li>
                             <li role="presentation">
                                 <a href="" class="link">

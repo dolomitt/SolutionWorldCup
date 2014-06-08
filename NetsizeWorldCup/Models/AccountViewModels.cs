@@ -16,6 +16,12 @@ namespace NetsizeWorldCup.Models
         public string ReturnUrl { get; set; }
     }
 
+    public class PlaceBetModel
+    {
+        public int GameId { get; set; }
+        public int Result { get; set; }
+    }
+
     public class ManageUserViewModel
     {
         [Required]
@@ -59,6 +65,11 @@ namespace NetsizeWorldCup.Models
         public string Email { get; set; }
 
         [Required]
+        [Display(Name = "UserName")]
+        [StringLength(100, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 5)]
+        public string UserName { get; set; }
+
+        [Required]
         [StringLength(100, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 6)]
         [DataType(DataType.Password)]
         [Display(Name = "Password")]
@@ -71,8 +82,15 @@ namespace NetsizeWorldCup.Models
         [Display(Name = "Time Zone")]
         public string TimeZoneInfo { get; set; }
 
+        [Url]
+        [Display(Name = "Picture Url")]
+        public string PictureUrl { get; set; }
+
         [Display(Name = "City")]
         public string City { get; set; }
+
+        [Display(Name = "Country")]
+        public string Country { get; set; }
 
         [DataType(DataType.Password)]
         [Display(Name = "Confirm password")]

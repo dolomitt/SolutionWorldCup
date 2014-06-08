@@ -32,7 +32,7 @@ $(function(){
                 right: 'next'
             },
 
-            selectable: true,
+            selectable: false,
             selectHelper: true,
             select: function(start, end, allDay) {
                 var $modal = $("#edit-modal"),
@@ -56,8 +56,8 @@ $(function(){
                 $modal.modal('show');
                 calendar.fullCalendar('unselect');
             },
-            editable: true,
-            droppable:true,
+            editable: false,
+            droppable: false,
 
             drop: function(date, allDay) { // this function is called when something is dropped
 

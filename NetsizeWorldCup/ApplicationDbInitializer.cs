@@ -12,21 +12,27 @@ using System;
 
 namespace NetsizeWorldCup
 {
-    public class ApplicationDbInitializer : DropCreateDatabaseAlways<ApplicationDbContext>
+    public class ApplicationDbInitializer : DropCreateDatabaseIfModelChanges<ApplicationDbContext>
     {
         protected override void Seed(ApplicationDbContext context)
         {
             //InitializeIdentityForEF(context);
             InitializeGameForEF(context);
 
-            base.Seed(context);
+            //base.Seed(context);
         }
 
         public override void InitializeDatabase(ApplicationDbContext context)
         {
+#if DEBUG
             SetSingleUser(context);
+#endif
+
             base.InitializeDatabase(context);
+
+#if DEBUG
             SetMultipleUser(context);
+#endif
         }
 
         private static void SetUser(ApplicationDbContext context, string type)
@@ -139,7 +145,7 @@ namespace NetsizeWorldCup
                 new Team { Name = "Germany", Group = groupG, FlagUrl = "http://img.fifa.com/images/flags/4/ger.png" },
                 new Team { Name = "Portugal", Group = groupG, FlagUrl = "http://img.fifa.com/images/flags/4/por.png" },
                 new Team { Name = "Ghana", Group = groupG, FlagUrl = "http://img.fifa.com/images/flags/4/gha.png" },
-                new Team { Name = "United States", Group = groupG, FlagUrl = "http://img.fifa.com/images/flags/4/United States.png" },
+                new Team { Name = "United States", Group = groupG, FlagUrl = "http://img.fifa.com/images/flags/4/usa.png" },
 
                 new Team { Name = "Belgium", Group = groupH, FlagUrl = "http://img.fifa.com/images/flags/4/bel.png" },
                 new Team { Name = "Algeria", Group = groupH, FlagUrl = "http://img.fifa.com/images/flags/4/alg.png" },
