@@ -11,7 +11,7 @@ namespace NetsizeWorldCup
         {
             // 1.
             // Get time span elapsed since the date.
-            TimeSpan s = DateTime.Now.Subtract(d);
+            TimeSpan s = DateTime.UtcNow.Subtract(d);
 
             // 2.
             // Get total number of days elapsed.

@@ -26,7 +26,7 @@ namespace NetsizeWorldCup.Controllers
         public ActionResult Index()
         {
             ViewBag.Feeds = GetLastFeeds();
-            ViewBag.Test = GetLastOdds();
+            //ViewBag.Test = GetLastOdds();
             ViewBag.WeatherInfo = GetWeatherInfo();
 
             ViewBag.NextGame = db.Games.Include(j => j.Local).Include(j => j.Visitor).Where<Game>(m => m.StartDate > DateTime.UtcNow).OrderBy<Game, DateTime>(k => k.StartDate).First<Game>();
@@ -126,7 +126,7 @@ namespace NetsizeWorldCup.Controllers
         }
 
 
-        public string GetLastOdds()
+        private string GetLastOdds()
         {
             try
             {
@@ -200,6 +200,20 @@ namespace NetsizeWorldCup.Controllers
             using (WebClient client = new WebClient())
             {
                 client.DownloadFile("http://xml.cdn.betclic.com/odds_en.xml", filename);
+            }
+        }
+
+        [AllowAnonymous]
+        public JsonResult UpdateOdds()
+        {
+            try
+            {
+                this.GetLastOdds();
+                return Json(new { status = true }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                return Json(new { status = false, message = ex.ToString() });
             }
         }
     }

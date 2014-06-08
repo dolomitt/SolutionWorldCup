@@ -16,9 +16,9 @@
                     <tbody>
                         <tr>
                             <td class="hidden-xs-portrait text-right">
-                                <img src="@ViewBag.NextGame.Local.FlagUrl" alt="">
+                                <img src="@ViewBag.NextGame.Local.FlagUrl" style="width: 70px; height: 46px" alt="">
                             </td>
-                            <td class="hidden-xs-portrait text-center">
+                            <td class="text-center">
                                 <p>
                                     @ViewBag.NextGame.Local.DisplayName - @ViewBag.NextGame.Visitor.DisplayName
                                 </p>
@@ -27,12 +27,12 @@
                                 </p>
                             </td>
                             <td class="hidden-xs-portrait">
-                                <img src="@ViewBag.NextGame.Visitor.FlagUrl" alt="">
+                                <img src="@ViewBag.NextGame.Visitor.FlagUrl" style="width: 70px; height: 46px" alt="">
                             </td>
                         </tr>
                     </tbody>
                 </table>
-                <blockquote>@ViewBag.Test</blockquote>
+                <blockquote class="hidden-xs">@ViewBag.Test</blockquote>
             </div>
         </section>
     </div>
@@ -74,9 +74,9 @@
                         <img class="pull-left img-circle" alt="" src="@item.ImageUrl">
                         <div class="news-item-info">
                             <div class="name">
-                                <a href="@item.Url">@item.Title</a>
+                                <a href="@item.Url" target="_blank">@item.Title</a>
                             </div>
-                            <div class="comment">@item.PublishedDate: @Html.Raw(item.Summary.Replace("</p>", "").Replace("<p>", ""))</div>
+                            <div class="comment hidden-xs">@item.PublishedDate: @Html.Raw(item.Summary.Replace("</p>", "").Replace("<p>", ""))</div>
                         </div>
                     </li>
                 }

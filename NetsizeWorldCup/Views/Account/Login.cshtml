@@ -1,4 +1,9 @@
-﻿<!DOCTYPE html>
+﻿@{
+    Layout = "~/Views/Shared/_EmptyLayout.cshtml";   
+}
+@model NetsizeWorldCup.Models.LoginViewModel
+
+<!DOCTYPE html>
 <html>
 <head>
     <title>Login</title>
@@ -20,31 +25,32 @@
                 <h4>Login to your account</h4>
             </header>
             <div class="body">
-                <form class="no-margin"
-                      action="index.html" method="get">
+                @using (Html.BeginForm("Login", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "no-margin", role = "form" }))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
                     <fieldset>
                         <div class="form-group no-margin">
-                            <label for="email">Email</label>
+                            @Html.LabelFor(m => m.Email)
 
                             <div class="input-group input-group-lg">
                                 <span class="input-group-addon">
                                     <i class="eicon-user"></i>
                                 </span>
-                                <input id="email" type="email" class="form-control input-lg"
-                                       placeholder="Your Email">
+                                @Html.TextBoxFor(m => m.Email, new { @class = "form-control input-lg", placeholder = "Your Email" })
+                                @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
                             </div>
-
                         </div>
 
                         <div class="form-group">
-                            <label for="password">Password</label>
+                            @Html.LabelFor(m => m.Password)
 
                             <div class="input-group input-group-lg">
                                 <span class="input-group-addon">
                                     <i class="fa fa-lock"></i>
                                 </span>
-                                <input id="password" type="password" class="form-control input-lg"
-                                       placeholder="Your Password">
+                                @Html.PasswordFor(m => m.Password, new { @class = "form-control input-lg", placeholder = "Your Password" })
+                                @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
                             </div>
 
                         </div>
@@ -56,13 +62,13 @@
                         </button>
                         <div class="forgot"><a class="forgot" href="#">Forgot Username or Password?</a></div>
                     </div>
-                </form>
+                }
             </div>
-            <footer>
+            @*<footer>
                 <div class="facebook-login">
                     <a href="index.html"><span><i class="fa fa-facebook-square fa-lg"></i> LogIn with Facebook</span></a>
                 </div>
-            </footer>
+            </footer>*@
         </section>
     </div>
 </body>

@@ -6,7 +6,7 @@
     <title>@ViewBag.Title - NS WC2014</title>
     <link href="/Content/styles/application.css" rel="stylesheet">
     @*@Styles.Render("~/css")
-    @Scripts.Render("~/bundles/modernizr")*@
+        @Scripts.Render("~/bundles/modernizr")*@
 
 </head>
 <body class="background-dark">
@@ -43,64 +43,7 @@
     </nav>
     <div class="wrap">
         <header class="page-header">
-            <div class="navbar">
-                <ul class="nav navbar-nav navbar-right pull-right">
-                    <li class="visible-phone-landscape">
-                        <a href="#" id="search-toggle">
-                            <i class="fa fa-search"></i>
-                        </a>
-                    </li>
-                    <li class="hidden-xs">
-                        <a href="/Account/Manage" id="settings"
-                           title="Settings"
-                           data-toggle="popover"
-                           data-placement="bottom">
-                            <i class="fa fa-cog"></i>
-                        </a>
-                    </li>
-                    <li class="hidden-xs dropdown">
-                        <a href="#" title="Account" id="account"
-                           class="dropdown-toggle"
-                           data-toggle="dropdown">
-                            <i class="fa fa-user"></i>
-                        </a>
-                        <ul id="account-menu" class="dropdown-menu account" role="menu">
-                            <li role="presentation" class="account-picture">
-                                <img src="img/2.jpg" alt="">
-                                @User.Identity.Name
-                            </li>
-                            <li role="presentation">
-                                <a href="" class="link">
-                                    <i class="fa fa-user"></i>
-                                    Profile
-                                </a>
-                            </li>
-                            <li role="presentation">
-                                <a href="component_calendar.html" class="link">
-                                    <i class="fa fa-calendar"></i>
-                                    Calendar
-                                </a>
-                            </li>
-                            <li role="presentation">
-                                <a href="#" class="link">
-                                    <i class="fa fa-inbox"></i>
-                                    Inbox
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
-                    <li class="visible-xs">
-                        <a href="#"
-                           class="btn-navbar"
-                           data-toggle="collapse"
-                           data-target=".sidebar"
-                           title="">
-                            <i class="fa fa-bars"></i>
-                        </a>
-                    </li>
-                    <li class="hidden-xs"><a href="/Account/Login"><i class="fa fa-sign-out"></i></a></li>
-                </ul>
-            </div>
+            @Html.Partial("_LoginPartial")
         </header>
         <div class="content container">
             @RenderBody()
@@ -138,9 +81,9 @@
     <script src="/Content/js/list-groups.js"></script>
     <script src="/Content/lib/jquery.dataTables.min.js"></script>
     @*<script src="/Content/lib/backbone/backbone-min.js"></script>
-    <script src="/Content/lib/backbone/backbone-pageable.js"></script>
-    <script src="/Content/lib/backgrid/backgrid.js"></script>
-    <script src="/Content/lib/backgrid/backgrid-paginator.js"></script>*@
+        <script src="/Content/lib/backbone/backbone-pageable.js"></script>
+        <script src="/Content/lib/backgrid/backgrid.js"></script>
+        <script src="/Content/lib/backgrid/backgrid-paginator.js"></script>*@
     @*<script src="/Content/js/tables-dynamic.js"></script>*@
 
     @RenderSection("scripts", required: false)
