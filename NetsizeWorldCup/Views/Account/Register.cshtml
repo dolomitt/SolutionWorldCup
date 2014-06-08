@@ -16,23 +16,23 @@
                     <blockquote>@Html.ValidationSummary("", new { @class = "text-danger" })</blockquote>
                     <fieldset>
                         <div class="control-group">
-                            @Html.LabelFor(m => m.UserName, new { @class = "col-md-2 control-label" })
+                            @Html.LabelFor(m => m.UserName, new { @class = "col-md-2 control-label required" })
                             <div class="controls form-group">
                                 <div class="col-sm-8">@Html.TextBoxFor(m => m.UserName, new { @class = "form-control" })</div>
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            @Html.LabelFor(m => m.Email, new { @class = "col-md-2 control-label required" })
+                            <div class="controls form-group">
+                                <div class="col-sm-8">
+                                    @Html.TextBoxFor(m => m.Email, new { @class = "form-control" })
+                                </div>
                             </div>
                         </div>
                         <div class="control-group">
                             @Html.LabelFor(m => m.PictureUrl, new { @class = "col-md-2 control-label" })
                             <div class="controls form-group">
                                 <div class="col-sm-8"><div class="col-sm-8">@Html.TextBoxFor(m => m.PictureUrl, new { @class = "form-control" })</div></div>
-                            </div>
-                        </div>
-                        <div class="control-group">
-                            @Html.LabelFor(m => m.Email, new { @class = "col-md-2 control-label" })
-                            <div class="controls form-group">
-                                <div class="col-sm-8">
-                                    @Html.TextBoxFor(m => m.Email, new { @class = "form-control" })
-                                </div>
                             </div>
                         </div>
                         <div class="control-group">
@@ -47,7 +47,7 @@
                     <fieldset>
                         <legend class="section">Password</legend>
                         <div class="control-group">
-                            @Html.LabelFor(m => m.Password, new { @class = "col-md-2 control-label" })
+                            @Html.LabelFor(m => m.Password, new { @class = "col-md-2 control-label required" })
                             <div class="controls form-group">
                                 <div class="col-xs-12 col-sm-8">
                                     @Html.PasswordFor(m => m.Password, new { @class = "form-control" })
@@ -55,7 +55,7 @@
                             </div>
                         </div>
                         <div class="control-group">
-                            @Html.LabelFor(m => m.ConfirmPassword, new { @class = "col-md-2 control-label" })
+                            @Html.LabelFor(m => m.ConfirmPassword, new { @class = "col-md-2 control-label required" })
                             <div class="controls form-group">
                                 <div class="col-xs-12 col-sm-8">
                                     @Html.PasswordFor(m => m.ConfirmPassword, new { @class = "form-control" })
@@ -66,7 +66,7 @@
                     <fieldset>
                         <legend class="section">Region</legend>
                         <div class="control-group">
-                            @Html.LabelFor(m => m.TimeZoneInfo, new { @class = "col-md-2 control-label" })
+                            @Html.LabelFor(m => m.TimeZoneInfo, new { @class = "col-md-2 control-label required" })
                             <div class="controls form-group">
                                 <div class="col-xs-12 col-sm-8">
                                     @Html.TextBoxFor(m => m.TimeZoneInfo, new { @class = "form-control" })
@@ -82,7 +82,7 @@
                             </div>
                         </div>
                         <div class="control-group">
-                            <label for="country" class="control-label">Country <span class="required">*</span></label>
+                            <label for="country" class="col-md-2 control-label">Country <span class="required">*</span></label>
                             <div class="controls form-group">
                                 <select id="country" required="required"
                                         data-placeholder="Select country" class="col-xs-12 col-sm-6 chzn-select" name="country">

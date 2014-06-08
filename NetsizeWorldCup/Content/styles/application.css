@@ -51,6 +51,12 @@ html {
   -webkit-text-size-adjust: 100%;
 }
 
+.required:after 
+{
+    content: " *";
+    color: red; 
+}
+
 body {
   margin: 0;
 }
