@@ -16,6 +16,8 @@ namespace NetsizeWorldCup.Controllers
 {
     public abstract class BaseController : Controller
     {
+        protected ApplicationDbContext db;
+
         protected ApplicationUserManager _userManager;
 
         public ApplicationUserManager UserManager

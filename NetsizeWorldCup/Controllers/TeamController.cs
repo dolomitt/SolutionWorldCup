@@ -12,10 +12,8 @@ using NetsizeWorldCup.Models;
 
 namespace NetsizeWorldCup.Controllers
 {
-    public class TeamController : Controller
+    public class TeamController : BaseController
     {
-        private ApplicationDbContext db = new ApplicationDbContext();
-
         // GET: Team
         //[OutputCache(Duration = 2000)]
         public async Task<ActionResult> Index()

@@ -15,8 +15,6 @@ namespace NetsizeWorldCup.Controllers
 {
     public class GameController : BaseController
     {
-        private ApplicationDbContext db = new ApplicationDbContext();
-
         // GET: Game
         public async Task<ActionResult> Index()
         {

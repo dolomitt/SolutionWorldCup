@@ -14,16 +14,15 @@ using System.IO;
 
 namespace NetsizeWorldCup.Controllers
 {
-    public class HomeController : Controller
+    public class HomeController : BaseController
     {
-        private ApplicationDbContext db = new ApplicationDbContext();
         Dictionary<string, Models.Betclic.Match> games;
 
         public ActionResult Index()
         {
             ViewBag.Feeds = GetLastFeeds();
             ViewBag.Test = GetLastOdds();
-            SetLastOdds();
+
 
             ViewBag.NextGame = db.Games.Include(j => j.Local).Include(j => j.Visitor).Where<Game>(m => m.StartDate > DateTime.UtcNow).OrderBy<Game, DateTime>(k => k.StartDate).First<Game>();
 
@@ -38,6 +37,7 @@ namespace NetsizeWorldCup.Controllers
 
                 if (match != null)
                 {
+                    //Taking the match result
                     game.WinOdd = match.bets.First(b => b.code == "Ftb_Mr3").choice.First(c => c.name == "%1%").odd;
                     game.DrawOdd = match.bets.First(b => b.code == "Ftb_Mr3").choice.First(c => c.name == "Draw").odd;
                     game.LossOdd = match.bets.First(b => b.code == "Ftb_Mr3").choice.First(c => c.name == "%2%").odd;
@@ -72,14 +72,19 @@ namespace NetsizeWorldCup.Controllers
         public string GetLastOdds()
         {
             NetsizeWorldCup.Models.Betclic.sports result = null;
+            bool fileUpdated = true;
 
             string fileName = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "App_Data", "odds.xml");
 
+
+            //File already exists and requires update
             if (System.IO.File.Exists(fileName) && System.IO.File.GetLastWriteTimeUtc(fileName) < DateTime.UtcNow.AddMinutes(-15))
             {
+                fileUpdated = true;
                 System.IO.File.Move(fileName, System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "App_Data", "odds_backup.xml"));
             }
 
+            //File didn't exist or has been moved to backup
             if (!System.IO.File.Exists(fileName))
             {
                 using (WebClient client = new WebClient())
@@ -88,6 +93,7 @@ namespace NetsizeWorldCup.Controllers
                 }
             }
 
+            //File has been correctly downloaded
             if (System.IO.File.Exists(fileName))
             {
                 XmlSerializer serializer = new XmlSerializer(typeof(NetsizeWorldCup.Models.Betclic.sports));
@@ -101,6 +107,10 @@ namespace NetsizeWorldCup.Controllers
                 var wcEvent = sport.@event.First(e => e.name == "World Cup");
 
                 games = wcEvent.match.ToDictionary<Models.Betclic.Match, string>(i => i.name);
+
+                //We had an update so we need to reset the db
+                if (fileUpdated)
+                    SetLastOdds();
 
                 return "Game Count = " + wcEvent.match.Count() + " - Odds updated at " + result.file_date.AddHours(1).ToString();
             }
