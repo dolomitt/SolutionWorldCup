@@ -12,14 +12,45 @@ using System;
 
 namespace NetsizeWorldCup
 {
-    public class ApplicationDbInitializer : DropCreateDatabaseIfModelChanges<ApplicationDbContext>
+    public class ApplicationDbInitializer : DropCreateDatabaseAlways<ApplicationDbContext>
     {
         protected override void Seed(ApplicationDbContext context)
         {
-            InitializeIdentityForEF(context);
+            //InitializeIdentityForEF(context);
             InitializeGameForEF(context);
 
             base.Seed(context);
+        }
+
+        public override void InitializeDatabase(ApplicationDbContext context)
+        {
+            SetSingleUser(context);
+            base.InitializeDatabase(context);
+            SetMultipleUser(context);
+        }
+
+        private static void SetUser(ApplicationDbContext context, string type)
+        {
+            //check Database already exists
+            if (!context.Database.Exists())
+            {
+                return;
+            }
+
+            string request = "ALTER DATABASE " + context.Database.Connection.Database + " SET " + type + " WITH ROLLBACK IMMEDIATE;";
+
+            //set Single user (kill all other processes)
+            context.Database.ExecuteSqlCommand(TransactionalBehavior.DoNotEnsureTransaction, request, new object[] { });
+        }
+
+        private static void SetSingleUser(ApplicationDbContext context)
+        {
+            SetUser(context, "SINGLE_USER");
+        }
+
+        private static void SetMultipleUser(ApplicationDbContext context)
+        {
+            SetUser(context, "MULTI_USER");
         }
 
         protected static Game CreateGame(ApplicationDbContext context, Phase phase, string location, string startDate, string localName, string VisitorName)
@@ -179,13 +210,13 @@ namespace NetsizeWorldCup
                 .Current.GetOwinContext()
                 .GetUserManager<ApplicationUserManager>();
 
-            var roleManager = HttpContext.Current
-                .GetOwinContext()
-                .Get<ApplicationRoleManager>();
+            //var roleManager = HttpContext.Current
+            //    .GetOwinContext()
+            //    .Get<ApplicationRoleManager>();
 
             const string name = "admin@admin.com";
             const string password = "Admin@123456";
-            const string roleName = "Admin";
+            //const string roleName = "Admin";
 
             //    //Create Role Admin if it does not exist
             //    var role = roleManager.FindByName(roleName);
