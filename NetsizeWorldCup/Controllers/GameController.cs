@@ -20,6 +20,7 @@ namespace NetsizeWorldCup.Controllers
         { }
 
         // GET: Game
+        [AllowAnonymous]
         public async Task<ActionResult> Index()
         {
             string currentUserId = User.Identity.GetUserId();
@@ -65,7 +66,7 @@ namespace NetsizeWorldCup.Controllers
                 if (!User.Identity.IsAuthenticated)
                     return Json(new { Status = false });
 
-                if (User.Identity.Name != "dolomitt@gmail.com")
+                if (User.Identity.Name != System.Configuration.ConfigurationManager.AppSettings["AdminLogin"])
                     return Json(new { Status = false });
 
                 string currentUserId = User.Identity.GetUserId();
@@ -86,100 +87,100 @@ namespace NetsizeWorldCup.Controllers
             }
         }
 
-        // GET: Game/Details/5
-        public async Task<ActionResult> Details(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Game game = await db.Games.FindAsync(id);
-            if (game == null)
-            {
-                return HttpNotFound();
-            }
-            return View(game);
-        }
+        //// GET: Game/Details/5
+        //public async Task<ActionResult> Details(int? id)
+        //{
+        //    if (id == null)
+        //    {
+        //        return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+        //    }
+        //    Game game = await db.Games.FindAsync(id);
+        //    if (game == null)
+        //    {
+        //        return HttpNotFound();
+        //    }
+        //    return View(game);
+        //}
 
-        // GET: Game/Create
-        public ActionResult Create()
-        {
-            return View();
-        }
+        //// GET: Game/Create
+        //public ActionResult Create()
+        //{
+        //    return View();
+        //}
 
-        // POST: Game/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create([Bind(Include = "ID,StartDate,Location,Result,CreationDate")] Game game)
-        {
-            if (ModelState.IsValid)
-            {
-                db.Games.Add(game);
-                await db.SaveChangesAsync();
-                return RedirectToAction("Index");
-            }
+        //// POST: Game/Create
+        //// To protect from overposting attacks, please enable the specific properties you want to bind to, for 
+        //// more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public async Task<ActionResult> Create([Bind(Include = "ID,StartDate,Location,Result,CreationDate")] Game game)
+        //{
+        //    if (ModelState.IsValid)
+        //    {
+        //        db.Games.Add(game);
+        //        await db.SaveChangesAsync();
+        //        return RedirectToAction("Index");
+        //    }
 
-            return View(game);
-        }
+        //    return View(game);
+        //}
 
-        // GET: Game/Edit/5
-        public async Task<ActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Game game = await db.Games.FindAsync(id);
-            if (game == null)
-            {
-                return HttpNotFound();
-            }
-            return View(game);
-        }
+        //// GET: Game/Edit/5
+        //public async Task<ActionResult> Edit(int? id)
+        //{
+        //    if (id == null)
+        //    {
+        //        return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+        //    }
+        //    Game game = await db.Games.FindAsync(id);
+        //    if (game == null)
+        //    {
+        //        return HttpNotFound();
+        //    }
+        //    return View(game);
+        //}
 
-        // POST: Game/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Edit([Bind(Include = "ID,StartDate,Location,Result,CreationDate")] Game game)
-        {
-            if (ModelState.IsValid)
-            {
-                db.Entry(game).State = EntityState.Modified;
-                await db.SaveChangesAsync();
-                return RedirectToAction("Index");
-            }
-            return View(game);
-        }
+        //// POST: Game/Edit/5
+        //// To protect from overposting attacks, please enable the specific properties you want to bind to, for 
+        //// more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public async Task<ActionResult> Edit([Bind(Include = "ID,StartDate,Location,Result,CreationDate")] Game game)
+        //{
+        //    if (ModelState.IsValid)
+        //    {
+        //        db.Entry(game).State = EntityState.Modified;
+        //        await db.SaveChangesAsync();
+        //        return RedirectToAction("Index");
+        //    }
+        //    return View(game);
+        //}
 
-        // GET: Game/Delete/5
-        public async Task<ActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Game game = await db.Games.FindAsync(id);
-            if (game == null)
-            {
-                return HttpNotFound();
-            }
-            return View(game);
-        }
+        //// GET: Game/Delete/5
+        //public async Task<ActionResult> Delete(int? id)
+        //{
+        //    if (id == null)
+        //    {
+        //        return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+        //    }
+        //    Game game = await db.Games.FindAsync(id);
+        //    if (game == null)
+        //    {
+        //        return HttpNotFound();
+        //    }
+        //    return View(game);
+        //}
 
-        // POST: Game/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<ActionResult> DeleteConfirmed(int id)
-        {
-            Game game = await db.Games.FindAsync(id);
-            db.Games.Remove(game);
-            await db.SaveChangesAsync();
-            return RedirectToAction("Index");
-        }
+        //// POST: Game/Delete/5
+        //[HttpPost, ActionName("Delete")]
+        //[ValidateAntiForgeryToken]
+        //public async Task<ActionResult> DeleteConfirmed(int id)
+        //{
+        //    Game game = await db.Games.FindAsync(id);
+        //    db.Games.Remove(game);
+        //    await db.SaveChangesAsync();
+        //    return RedirectToAction("Index");
+        //}
 
         protected override void Dispose(bool disposing)
         {

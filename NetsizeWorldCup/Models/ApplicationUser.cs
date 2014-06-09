@@ -24,6 +24,7 @@ namespace NetsizeWorldCup.Models
         public string ImageUrl { get; set; }
 
         public string TimeZoneInfoId { get; set; }
+        public string CultureInfoId { get; set; }
 
         private TimeZoneInfo _timeZone;
 

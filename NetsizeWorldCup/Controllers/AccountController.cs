@@ -77,7 +77,13 @@ namespace NetsizeWorldCup.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = await UserManager.FindAsync(model.Email, model.Password);
+                var user = await UserManager.FindByEmailAsync(model.Email);
+
+                if (user==null)
+                    ModelState.AddModelError("", "Invalid email or password.");
+
+                user = await UserManager.FindAsync(user.UserName, model.Password);
+
                 if (user != null)
                 {
                     await SignInAsync(user, model.RememberMe);
@@ -112,13 +118,14 @@ namespace NetsizeWorldCup.Controllers
             {
                 var user = new ApplicationUser()
                 {
-                    UserName = model.Email,
+                    UserName = model.UserName,
                     Email = model.Email,
                     ImageUrl = model.PictureUrl,
                     TimeZoneInfoId = model.TimeZoneInfo
                 };
 
                 IdentityResult result = await UserManager.CreateAsync(user, model.Password);
+
                 if (result.Succeeded)
                 {
                     await SignInAsync(user, isPersistent: false);

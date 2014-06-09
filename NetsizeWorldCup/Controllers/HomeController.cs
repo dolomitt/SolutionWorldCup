@@ -13,17 +13,22 @@ using System.Xml.Serialization;
 using System.IO;
 using Newtonsoft.Json;
 using Microsoft.AspNet.Identity;
+using System.Web.Caching;
 
 namespace NetsizeWorldCup.Controllers
 {
     public class HomeController : BaseController
     {
+        static object _syncRootWeather = new object();
+        static object _syncRootFeed = new object();
+
         public HomeController()
             : base()
         { }
 
         Dictionary<string, Models.Betclic.Match> games;
 
+        [AllowAnonymous]
         public ActionResult Index()
         {
             string currentUserId = User.Identity.GetUserId();
@@ -35,7 +40,6 @@ namespace NetsizeWorldCup.Controllers
                 ViewBag.CurrentTimeZoneInfo = TimeZoneInfo.Local;
 
             ViewBag.Feeds = GetLastFeeds();
-            //ViewBag.Test = GetLastOdds();
             ViewBag.WeatherInfo = GetWeatherInfo();
 
             ViewBag.NextGame = db.Games.Include(j => j.Local).Include(j => j.Visitor).Where<Game>(m => m.StartDate > DateTime.UtcNow).OrderBy<Game, DateTime>(k => k.StartDate).First<Game>();
@@ -61,87 +65,109 @@ namespace NetsizeWorldCup.Controllers
             db.SaveChanges();
         }
 
-        public WeatherInfo GetWeatherInfo()
+        private WeatherInfo GetWeatherInfo()
         {
             try
             {
-                string fileName = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "App_Data", "weather.json");
-                string backupFileName = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "App_Data", "weather_backup.json");
+                if (HttpRuntime.Cache["WeatherInfo"] != null)
+                    return (WeatherInfo)HttpRuntime.Cache["WeatherInfo"];
 
-                //File already exists and requires update
-                if (System.IO.File.Exists(fileName) && System.IO.File.GetLastWriteTimeUtc(fileName) < DateTime.UtcNow.AddMinutes(-30))
+                lock (_syncRootWeather)
                 {
-                    //Removing old backup
-                    if (System.IO.File.Exists(backupFileName))
-                        System.IO.File.Delete(backupFileName);
+                    string fileName = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "App_Data", "weather.json");
+                    string backupFileName = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "App_Data", "weather_backup.json");
 
-                    //moving newer file to backup
-                    System.IO.File.Move(fileName, backupFileName);
-                }
-
-                //File didn't exist or has been moved to backup
-                if (System.Configuration.ConfigurationManager.AppSettings["Environment"] != "DEV")
-                {
-                    if (!System.IO.File.Exists(fileName))
+                    //File already exists and requires update
+                    if (System.IO.File.Exists(fileName) && System.IO.File.GetLastWriteTimeUtc(fileName) < DateTime.UtcNow.AddMinutes(-30))
                     {
-                        using (WebClient client = new WebClient())
+                        //Removing old backup
+                        if (System.IO.File.Exists(backupFileName))
+                            System.IO.File.Delete(backupFileName);
+
+                        //moving newer file to backup
+                        System.IO.File.Move(fileName, backupFileName);
+                    }
+
+                    //File didn't exist or has been moved to backup
+                    if (System.Configuration.ConfigurationManager.AppSettings["Environment"] == "PROD")
+                    {
+                        if (!System.IO.File.Exists(fileName))
                         {
-                            client.DownloadFile("http://api.wunderground.com/api/fca502fbc6701138/forecast/q/FR/Paris.json", fileName);
+                            using (WebClient client = new WebClient())
+                            {
+                                client.DownloadFile("http://api.wunderground.com/api/fca502fbc6701138/forecast/q/FR/Paris.json", fileName);
+                            }
                         }
                     }
-                }
 
-                if (System.IO.File.Exists(fileName))
-                {
-                    var weatherData = JsonConvert.DeserializeObject<NetsizeWorldCup.Models.WeatherApi.Rootobject>(System.IO.File.ReadAllText(fileName));
+                    if (System.IO.File.Exists(fileName))
+                    {
+                        var weatherData = JsonConvert.DeserializeObject<NetsizeWorldCup.Models.WeatherApi.Rootobject>(System.IO.File.ReadAllText(fileName));
 
-                    WeatherInfo winfo = new WeatherInfo { ImageUrl = weatherData.forecast.txt_forecast.forecastday.First().icon_url, Text = weatherData.forecast.txt_forecast.forecastday.First().fcttext_metric };
-                    return winfo;
-                }
-                else
-                {
-                    return null;
+                        WeatherInfo winfo = new WeatherInfo { ImageUrl = weatherData.forecast.txt_forecast.forecastday.First().icon_url, Text = weatherData.forecast.txt_forecast.forecastday.First().fcttext_metric };
+                        HttpRuntime.Cache.Insert("WeatherInfo", winfo, null, DateTime.UtcNow.AddMinutes(20), Cache.NoSlidingExpiration);
+
+                        return winfo;
+                    }
+                    else
+                    {
+                        return null;
+                    }
                 }
             }
             catch
             {
                 return null;
             }
+
+
+
         }
 
         private List<FeedItem> GetLastFeeds()
         {
+            if (HttpRuntime.Cache["LastFeeds"] != null)
+                return (List<FeedItem>)HttpRuntime.Cache["LastFeeds"];
+
             try
             {
-                if (System.Configuration.ConfigurationManager.AppSettings["Environment"] != "DEV")
+                lock (_syncRootFeed)
                 {
-                    string url = "http://www.fifa.com/worldcup/news/rss.xml";
-                    SyndicationFeed feed = null;
-
-                    using (XmlReader reader = XmlReader.Create(url))
+                    if (System.Configuration.ConfigurationManager.AppSettings["Environment"] == "PROD")
                     {
-                        feed = SyndicationFeed.Load(reader);
-                    }
+                        string url = "http://www.fifa.com/worldcup/news/rss.xml";
+                        SyndicationFeed feed = null;
 
-                    return feed.Items.Take<SyndicationItem>(5).Select<SyndicationItem, FeedItem>(
-                        j => new FeedItem
+                        using (XmlReader reader = XmlReader.Create(url))
                         {
-                            Title = j.Title.Text,
-                            Summary = j.Summary.Text,
-                            PublishedDate = j.PublishDate.LocalDateTime.GetPrettyDate(),
-                            Url = j.Links[0].GetAbsoluteUri().ToString(),
-                            ImageUrl = j.Links[1].GetAbsoluteUri().ToString()
-                        }).ToList<FeedItem>();
-                }
-                else
-                {
-                    return new List<FeedItem>();
+                            feed = SyndicationFeed.Load(reader);
+                        }
+
+                        List<FeedItem> feeds = feed.Items.Take<SyndicationItem>(5).Select<SyndicationItem, FeedItem>(
+                            j => new FeedItem
+                            {
+                                Title = j.Title.Text,
+                                Summary = j.Summary.Text,
+                                PublishedDate = j.PublishDate.LocalDateTime.GetPrettyDate(),
+                                Url = j.Links[0].GetAbsoluteUri().ToString(),
+                                ImageUrl = j.Links[1].GetAbsoluteUri().ToString()
+                            }).ToList<FeedItem>();
+
+                        HttpRuntime.Cache.Insert("LastFeeds", feeds, null, DateTime.UtcNow.AddMinutes(20), Cache.NoSlidingExpiration);
+
+                        return feeds;
+                    }
+                    else
+                    {
+                        return new List<FeedItem>();
+                    }
                 }
             }
             catch
             {
                 return new List<FeedItem>();
             }
+
         }
 
 
@@ -155,30 +181,32 @@ namespace NetsizeWorldCup.Controllers
                 string fileName = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "App_Data", "odds.xml");
                 string backupFileName = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "App_Data", "odds_backup.xml");
 
-
-                //File already exists and requires update
-                if (System.IO.File.Exists(fileName) && System.IO.File.GetLastWriteTimeUtc(fileName) < DateTime.UtcNow.AddMinutes(-15))
+                if (System.Configuration.ConfigurationManager.AppSettings["Environment"] == "PROD")
                 {
-                    fileUpdated = true;
-
-                    //Removing old backup
-                    if (System.IO.File.Exists(backupFileName))
-                        System.IO.File.Delete(backupFileName);
-
-                    //moving newer file to backup
-                    System.IO.File.Move(fileName, backupFileName);
-                }
-
-                //File didn't exist or has been moved to backup
-                if (!System.IO.File.Exists(fileName))
-                {
-                    try
+                    //File already exists and requires update
+                    if (System.IO.File.Exists(fileName) && System.IO.File.GetLastWriteTimeUtc(fileName) < DateTime.UtcNow.AddMinutes(-15))
                     {
-                        GetOdds(fileName);
+                        fileUpdated = true;
+
+                        //Removing old backup
+                        if (System.IO.File.Exists(backupFileName))
+                            System.IO.File.Delete(backupFileName);
+
+                        //moving newer file to backup
+                        System.IO.File.Move(fileName, backupFileName);
                     }
-                    catch (System.IO.IOException ioEx)
+
+                    //File didn't exist or has been moved to backup
+                    if (!System.IO.File.Exists(fileName))
                     {
-                        GetOdds(fileName);
+                        try
+                        {
+                            GetOdds(fileName);
+                        }
+                        catch (System.IO.IOException ioEx)
+                        {
+                            GetOdds(fileName);
+                        }
                     }
                 }
 

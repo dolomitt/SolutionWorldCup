@@ -58,17 +58,27 @@
                     <fieldset>
                         <legend class="section">Region</legend>
                         <div class="control-group">
+                            @{
+                                var timeZoneList = TimeZoneInfo
+                                    .GetSystemTimeZones()
+                                    .Select(t => new SelectListItem
+                                    {
+                                        Text = t.DisplayName,
+                                        Value = t.Id,
+                                        Selected = t.Id == "Romance Standard Time"
+                                    });
+                            }
                             @Html.LabelFor(m => m.TimeZoneInfo, new { @class = "col-md-2 control-label required" })
                             <div class="controls form-group">
                                 <div class="col-xs-12 col-sm-8">
-                                    @Html.TextBoxFor(m => m.TimeZoneInfo, new { @class = "form-control" })
+                                    @Html.DropDownListFor(model => model.TimeZoneInfo, timeZoneList, new { @class = "form-control" })
                                 </div>
                             </div>
                         </div>
                     </fieldset>
                     <div class="form-actions">
                         <input type="submit" class="btn btn-primary" value="Validate &amp; Submit" />
-                        <button type="button" class="btn btn-default">Cancel</button>
+                        <button type="button" class="btn btn-default" onclick="document.location='@Url.Action("Index","Home")'">Cancel</button>
                     </div>
                 }
             </div>

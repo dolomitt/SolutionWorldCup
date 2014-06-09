@@ -20,11 +20,14 @@
                         <th class="hidden-md hidden-sm hidden-xs">#</th>
                         <th class="hidden-xs">Date</th>
                         <th class="hidden-sm hidden-xs"></th>
-                        <th class="text-center">Result</th>
+                        <th class="text-center">1 X 2</th>
                         <th class="hidden-sm hidden-xs"></th>
                         <th class="hidden-md hidden-sm hidden-xs">Location</th>
                     </tr>
                 </thead>
+                @{
+                    bool IsAdmin = (User.Identity.Name == System.Configuration.ConfigurationManager.AppSettings["AdminLogin"]);
+                }
                 <tbody>
                     @foreach (var item in Model)
                     {
@@ -46,20 +49,20 @@
                                         <div class="btn-group nowrap" data-toggle="buttons" title="Place your bet">
                                             @for (int i = 1; i < 4; i++)
                                             {
-                                                <label class="@(ViewBag.UserBets != null && ViewBag.UserBets.Contains(item.ID + "_" + i) ? "btn btn-danger active" : "btn btn-success")" @(!User.Identity.IsAuthenticated ? "disabled" : "") onclick="return SetBet(@item.ID, @i)" id="btnbet_@string.Concat(i,"_",item.ID)">
+                                                <label class="@(ViewBag.UserBets != null && ViewBag.UserBets.Contains(item.ID + "_" + i) ? "btn btn-danger active" : "btn btn-success")" @(!User.Identity.IsAuthenticated || item.StartDate < DateTime.UtcNow ? "disabled" : "") onclick="return SetBet(@item.ID, @i)" id="btnbet_@string.Concat(i,"_",item.ID)">
                                                     @item.GetOdd(i)
                                                 </label>
                                             }
                                         </div>
                                     </p>
                                 }
-                                @if (User.Identity.Name == "dolomitt@gmail.com" || item.Result != 0)
+                                @if (IsAdmin || item.Result.HasValue)
                                 {
                                     <p>
                                         <div class="btn-group nowrap" data-toggle="buttons" title="Game Result">
                                             @for (int i = 1; i < 4; i++)
                                             {
-                                                <label class="@(item.Result == i ? "btn btn-info active" : "btn btn-success")" @(User.Identity.Name != "dolomitt@gmail.com" ? "disabled" : "") onclick="return SetResult(@item.ID, @i)" id="btnresult_@string.Concat(i,"_",item.ID)">
+                                                <label class="@(item.Result == i ? "btn btn-info active" : "btn btn-success")" @(!IsAdmin ? "disabled" : "") onclick="return SetResult(@item.ID, @i)" id="btnresult_@string.Concat(i,"_",item.ID)">
                                                     @item.GetOdd(i)
                                                 </label>
                                             }
