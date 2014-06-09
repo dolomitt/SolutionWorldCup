@@ -12,6 +12,7 @@ using System.Net;
 using System.Xml.Serialization;
 using System.IO;
 using Newtonsoft.Json;
+using Microsoft.AspNet.Identity;
 
 namespace NetsizeWorldCup.Controllers
 {
@@ -25,6 +26,14 @@ namespace NetsizeWorldCup.Controllers
 
         public ActionResult Index()
         {
+            string currentUserId = User.Identity.GetUserId();
+            var user = db.Users.FirstOrDefault<ApplicationUser>(u => u.Id == currentUserId);
+
+            if (user != null)
+                ViewBag.CurrentTimeZoneInfo = user.TimeZoneInfo;
+            else
+                ViewBag.CurrentTimeZoneInfo = TimeZoneInfo.Local;
+
             ViewBag.Feeds = GetLastFeeds();
             //ViewBag.Test = GetLastOdds();
             ViewBag.WeatherInfo = GetWeatherInfo();
