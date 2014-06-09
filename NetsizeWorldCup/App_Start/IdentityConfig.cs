@@ -9,6 +9,8 @@ using System.Web;
 using System.Collections.Generic;
 using System.Linq;
 using System;
+using System.Net;
+using System.Net.Mail;
 
 namespace NetsizeWorldCup
 {
@@ -67,8 +69,29 @@ namespace NetsizeWorldCup
         public Task SendAsync(IdentityMessage message)
         {
             // Plug in your email service here to send an email.
-            return Task.FromResult(0);
+            return configSendGridasync(message);
         }
+
+        // Use NuGet to install SendGrid (Basic C# client lib) 
+        private async Task<bool> configSendGridasync(IdentityMessage message)
+        {
+            MailMessage mailMsg = new MailMessage();
+            mailMsg.To.Add(message.Destination);
+            mailMsg.From = new System.Net.Mail.MailAddress("tgravrand@netsize.com", "Thibaud");
+            mailMsg.Subject = message.Subject;
+            mailMsg.Body = message.Body;
+            mailMsg.IsBodyHtml = true;
+
+            SmtpClient smtpClient = new SmtpClient("smtp.sendgrid.net", 2525);
+            System.Net.NetworkCredential credentials = new System.Net.NetworkCredential("azure_c62a6fe87562a20f1b36447f0ee213fe@azure.com", "0E7WWQ6LrLxNwsS");
+            smtpClient.Credentials = credentials;
+            smtpClient.EnableSsl = true;
+            
+            smtpClient.Send(mailMsg);
+
+            await Task.Yield();
+            return true;
+        }    
     }
 
     public class SmsService : IIdentityMessageService
