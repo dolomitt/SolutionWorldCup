@@ -13,15 +13,15 @@
             </h4>
         </header>
         <div class="body">
-            <blockquote>You can bet on the next games to be played - This is a classic 1 X 2 (Local, Draw, Visitor) - Odds are downloaded from betclic. Games displayed in @ViewBag.CurrentTimeZoneInfo.DisplayName</blockquote>
+            <blockquote>You can bet on the next games to be played - This is a classic 1 X 2 (Local, Draw, Visitor) - Odds are downloaded from betclic. Bets will close when game start. Games displayed in your timezone @ViewBag.CurrentTimeZoneInfo.DisplayName</blockquote>
             <table class="table table-hover table-condensed table-images">
                 <thead>
                     <tr>
                         <th class="hidden-md hidden-sm hidden-xs">#</th>
-                        <th class="hidden-md hidden-sm hidden-xs">Date</th>
-                        <th class="hidden-md hidden-sm hidden-xs"></th>
+                        <th class="hidden-xs">Date</th>
+                        <th class="hidden-sm hidden-xs"></th>
                         <th class="text-center">Result</th>
-                        <th class="hidden-md hidden-sm hidden-xs"></th>
+                        <th class="hidden-sm hidden-xs"></th>
                         <th class="hidden-md hidden-sm hidden-xs">Location</th>
                     </tr>
                 </thead>
@@ -32,28 +32,43 @@
                             <td class="hidden-md hidden-sm hidden-xs" style="vertical-align: middle">
                                 @Html.DisplayFor(modelItem => item.ID)
                             </td>
-                            <td class="hidden-md hidden-sm hidden-xs" style="vertical-align: middle">
+                            <td class="hidden-xs" style="vertical-align: middle">
                                 @item.StartDate.UtcToLocal((TimeZoneInfo)ViewBag.CurrentTimeZoneInfo).ToShortDateString() @item.StartDate.UtcToLocal((TimeZoneInfo)ViewBag.CurrentTimeZoneInfo).ToShortTimeString()
                             </td>
-                            <td class="text-right hidden-md hidden-sm hidden-xs" style="vertical-align: middle">
+                            <td class="text-right hidden-sm hidden-xs" style="vertical-align: middle">
                                 <img src="@item.Local.FlagUrl" style="box-shadow: 0px 0px 10px #888;border-radius: 5px;width:70px;height:46px" />
                             </td>
                             <td class="text-center" style="vertical-align: middle">
                                 <div>@Html.DisplayFor(modelItem => item.Local.Name) - @Html.DisplayFor(modelItem => item.Visitor.Name)</div>
-                                <div class="btn-group nowrap" data-toggle="buttons">
-                                    <label class="@(ViewBag.UserBets != null && ViewBag.UserBets.Contains(item.ID + "_" + 1) ? "btn btn-danger active" : "btn btn-success")" onclick="return SetBet(@item.ID, 1)" id="btnbet_1_@item.ID">
-                                        @item.WinOdd
-                                    </label>
-                                    <label class="@(ViewBag.UserBets != null && ViewBag.UserBets.Contains(item.ID + "_" + 2) ? "btn btn-danger active" : "btn btn-success")" onclick="return SetBet(@item.ID, 2)" id="btnbet_2_@item.ID">
-                                        @item.DrawOdd
-                                    </label>
-                                    <label class="@(ViewBag.UserBets != null && ViewBag.UserBets.Contains(item.ID + "_" + 3) ? "btn btn-danger active" : "btn btn-success")" onclick="return SetBet(@item.ID, 3)" id="btnbet_3_@item.ID">
-                                        @item.LossOdd
-                                    </label>
-                                </div>
+                                @if (User.Identity.IsAuthenticated)
+                                {
+                                    <p>
+                                        <div class="btn-group nowrap" data-toggle="buttons" title="Place your bet">
+                                            @for (int i = 1; i < 4; i++)
+                                            {
+                                                <label class="@(ViewBag.UserBets != null && ViewBag.UserBets.Contains(item.ID + "_" + i) ? "btn btn-danger active" : "btn btn-success")" @(!User.Identity.IsAuthenticated ? "disabled" : "") onclick="return SetBet(@item.ID, @i)" id="btnbet_@string.Concat(i,"_",item.ID)">
+                                                    @item.GetOdd(i)
+                                                </label>
+                                            }
+                                        </div>
+                                    </p>
+                                }
+                                @if (User.Identity.Name == "dolomitt@gmail.com" || item.Result != 0)
+                                {
+                                    <p>
+                                        <div class="btn-group nowrap" data-toggle="buttons" title="Game Result">
+                                            @for (int i = 1; i < 4; i++)
+                                            {
+                                                <label class="@(item.Result == i ? "btn btn-info active" : "btn btn-success")" @(User.Identity.Name != "dolomitt@gmail.com" ? "disabled" : "") onclick="return SetResult(@item.ID, @i)" id="btnresult_@string.Concat(i,"_",item.ID)">
+                                                    @item.GetOdd(i)
+                                                </label>
+                                            }
+                                        </div>
+                                    </p>
+                                }
                             </td>
-                            <td class="hidden-md hidden-sm hidden-xs" style="vertical-align: middle">
-                                <img src="@item.Visitor.FlagUrl" style="box-shadow: 0px 0px 10px #888;border-radius: 5px;width:70px;height:46px" />
+                            <td class="hidden-sm hidden-xs" style="vertical-align: middle">
+                                <img src="@item.Visitor.FlagUrl" style="box-shadow: 0px 0px 10px #888; border-radius:5px; width:70px; height:46px" />
                             </td>
                             <td class="hidden-md hidden-sm hidden-xs" style="vertical-align: middle">
                                 @Html.DisplayFor(modelItem => item.Location)

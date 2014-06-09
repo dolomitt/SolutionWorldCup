@@ -15,31 +15,32 @@
     </div>
     <nav id="sidebar" class="sidebar nav-collapse collapse">
         <ul id="side-nav" class="side-nav">
-            <li class="active">
+            <li class="panel active">
                 @Html.ActionLink("Dashboard", "Index", "Home")
             </li>
-            <li>
+            <li class="panel">
                 @Html.ActionLink("Users", "Index", "Account")
             </li>
-            <li>
+            <li class="panel">
                 @Html.ActionLink("Teams", "Index", "Team")
             </li>
-            <li>
+            <li class="panel">
                 @Html.ActionLink("Games", "Index", "Game")
             </li>
-            <li>
+            <li class="panel">
                 @Html.ActionLink("Calendar", "Calendar", "Game")
             </li>
-            <li>
+            <li class="panel">
                 @Html.ActionLink("Scores", "Index", "Home")
             </li>
-            <li>
-                @Html.ActionLink("Bets", "Index", "Home")
-            </li>
-            <li>
+            <li class="panel">
                 @Html.ActionLink("Rules", "Index", "Home")
             </li>
         </ul>
+        <div id="sidebar-settings" class="settings">
+            @*<button class="btn-icons btn btn-transparent btn-sm" data-value="icons" type="button">Icons</button>*@
+            <button class="btn-auto btn btn-transparent btn-sm" data-value="auto" type="button">Auto</button>
+        </div>
     </nav>
     <div class="wrap">
         <header class="page-header">
@@ -94,11 +95,11 @@
     <script src="/Content/lib/jquery.nestable.js"></script>
     <script src="/Content/js/list-groups.js"></script>
     <script src="/Content/lib/jquery.dataTables.min.js"></script>
-    @*<script src="/Content/lib/backbone/backbone-min.js"></script>
-        <script src="/Content/lib/backbone/backbone-pageable.js"></script>
-        <script src="/Content/lib/backgrid/backgrid.js"></script>
-        <script src="/Content/lib/backgrid/backgrid-paginator.js"></script>*@
-    @*<script src="/Content/js/tables-dynamic.js"></script>*@
+    <script src="/Content/lib/backbone/backbone-min.js"></script>
+    <script src="/Content/lib/backbone/backbone-pageable.js"></script>
+    <script src="/Content/lib/backgrid/backgrid.js"></script>
+    <script src="/Content/lib/backgrid/backgrid-paginator.js"></script>
+    <script src="/Content/js/tables-dynamic.js"></script>
 
     @RenderSection("scripts", required: false)
 </body>

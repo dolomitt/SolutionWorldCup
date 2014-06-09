@@ -115,9 +115,6 @@ namespace NetsizeWorldCup.Controllers
                     UserName = model.Email,
                     Email = model.Email,
                     ImageUrl = model.PictureUrl,
-                    City = model.City,
-                    Country = model.Country,
-                    PhoneNumber = model.PhoneNumber,
                     TimeZoneInfoId = model.TimeZoneInfo
                 };
 

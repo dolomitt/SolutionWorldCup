@@ -12,31 +12,28 @@
                 </h4>
             </header>
             <div class="body">
-                <table class="table table-condensed table-images">
-                    <tbody>
-                        <tr>
-                            <td class="hidden-xs-portrait text-right">
-                                <img src="@ViewBag.NextGame.Local.FlagUrl" style="width: 70px; height: 46px" alt="">
-                            </td>
-                            <td class="text-center">
-                                <p>
-                                    @ViewBag.NextGame.Local.DisplayName - @ViewBag.NextGame.Visitor.DisplayName
-                                </p>
-                                <p>
-                                    @ViewBag.NextGame.WinOdd / @ViewBag.NextGame.DrawOdd / @ViewBag.NextGame.LossOdd
-                                </p>
-                            </td>
-                            <td class="hidden-xs-portrait">
-                                <img src="@ViewBag.NextGame.Visitor.FlagUrl" style="width: 70px; height: 46px" alt="">
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-                <blockquote class="hidden-xs">@ViewBag.Test</blockquote>
-                <blockquote class="hidden-xs">@ViewBag.CurrentTimeZoneInfo.DisplayName</blockquote>
+                @Html.Partial("~/Views/Game/_NextGamePartial.cshtml")
             </div>
         </section>
     </div>
+    @if (!User.Identity.IsAuthenticated)
+    {
+        <div class="col-md-4">
+            <section class="widget">
+                <header>
+                    <h4>
+                        <i class="fa fa-location-arrow"></i>
+                        Join us !
+                    </h4>
+                </header>
+                <div class="body">
+                    <blockquote>
+                        Please @Html.ActionLink("log in", "Login", "Account") or @Html.ActionLink("register", "Register", "Account") or to the Netsize World Cup 2014 !
+                    </blockquote>
+                </div>
+            </section>
+        </div>
+    }
     @if (ViewBag.WeatherInfo != null)
     {
         <div class="col-md-4">

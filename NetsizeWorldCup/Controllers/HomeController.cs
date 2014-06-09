@@ -80,11 +80,14 @@ namespace NetsizeWorldCup.Controllers
                 }
 
                 //File didn't exist or has been moved to backup
-                if (!System.IO.File.Exists(fileName))
+                if (System.Configuration.ConfigurationManager.AppSettings["Environment"] != "DEV")
                 {
-                    using (WebClient client = new WebClient())
+                    if (!System.IO.File.Exists(fileName))
                     {
-                        client.DownloadFile("http://api.wunderground.com/api/fca502fbc6701138/forecast/q/FR/Paris.json", fileName);
+                        using (WebClient client = new WebClient())
+                        {
+                            client.DownloadFile("http://api.wunderground.com/api/fca502fbc6701138/forecast/q/FR/Paris.json", fileName);
+                        }
                     }
                 }
 
@@ -106,27 +109,34 @@ namespace NetsizeWorldCup.Controllers
             }
         }
 
-        public List<FeedItem> GetLastFeeds()
+        private List<FeedItem> GetLastFeeds()
         {
             try
             {
-                string url = "http://www.fifa.com/worldcup/news/rss.xml";
-                SyndicationFeed feed = null;
-
-                using (XmlReader reader = XmlReader.Create(url))
+                if (System.Configuration.ConfigurationManager.AppSettings["Environment"] != "DEV")
                 {
-                    feed = SyndicationFeed.Load(reader);
-                }
+                    string url = "http://www.fifa.com/worldcup/news/rss.xml";
+                    SyndicationFeed feed = null;
 
-                return feed.Items.Take<SyndicationItem>(5).Select<SyndicationItem, FeedItem>(
-                    j => new FeedItem
+                    using (XmlReader reader = XmlReader.Create(url))
                     {
-                        Title = j.Title.Text,
-                        Summary = j.Summary.Text,
-                        PublishedDate = j.PublishDate.LocalDateTime.GetPrettyDate(),
-                        Url = j.Links[0].GetAbsoluteUri().ToString(),
-                        ImageUrl = j.Links[1].GetAbsoluteUri().ToString()
-                    }).ToList<FeedItem>();
+                        feed = SyndicationFeed.Load(reader);
+                    }
+
+                    return feed.Items.Take<SyndicationItem>(5).Select<SyndicationItem, FeedItem>(
+                        j => new FeedItem
+                        {
+                            Title = j.Title.Text,
+                            Summary = j.Summary.Text,
+                            PublishedDate = j.PublishDate.LocalDateTime.GetPrettyDate(),
+                            Url = j.Links[0].GetAbsoluteUri().ToString(),
+                            ImageUrl = j.Links[1].GetAbsoluteUri().ToString()
+                        }).ToList<FeedItem>();
+                }
+                else
+                {
+                    return new List<FeedItem>();
+                }
             }
             catch
             {

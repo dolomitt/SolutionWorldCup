@@ -1,0 +1,23 @@
+﻿@using NetsizeWorldCup;
+
+<table class="table table-condensed table-images">
+    <tbody>
+        <tr>
+            <td class="hidden-xs-portrait text-right">
+                <img src="@ViewBag.NextGame.Local.FlagUrl" style="width: 70px; height: 46px" alt="">
+            </td>
+            <td class="text-center">
+                <p>
+                    @ViewBag.NextGame.Local.DisplayName - @ViewBag.NextGame.Visitor.DisplayName
+                </p>
+                <p>
+                    @ViewBag.NextGame.WinOdd / @ViewBag.NextGame.DrawOdd / @ViewBag.NextGame.LossOdd
+                </p>
+            </td>
+            <td class="hidden-xs-portrait">
+                <img src="@ViewBag.NextGame.Visitor.FlagUrl" style="width: 70px; height: 46px" alt="">
+            </td>
+        </tr>
+    </tbody>
+</table>
+<blockquote><p>@TimeZoneInfo.ConvertTimeFromUtc(ViewBag.NextGame.StartDate, (TimeZoneInfo)ViewBag.CurrentTimeZoneInfo).ToShortDateString() @TimeZoneInfo.ConvertTimeFromUtc(ViewBag.NextGame.StartDate, (TimeZoneInfo)ViewBag.CurrentTimeZoneInfo).ToShortTimeString()</p> <p>Current TimeZone: @ViewBag.CurrentTimeZoneInfo.DisplayName</p></blockquote>

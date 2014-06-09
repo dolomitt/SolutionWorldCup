@@ -54,6 +54,29 @@ function SetBet(gameId, result) {
     .fail(function () { alert("An error occured - Please refresh"); });
 }
 
+function SetResult(gameId, result) {
+    $.post("Game/SetResult", { GameId: gameId, Result: result },
+        function () {
+            var btnId1 = '#btnresult_1_' + gameId;
+            var btnId2 = '#btnresult_2_' + gameId;
+            var btnId3 = '#btnresult_3_' + gameId;
+
+            $(btnId1).removeClass("btn-danger active");
+            $(btnId1).addClass("btn-success");
+
+            $(btnId2).removeClass("btn-danger active");
+            $(btnId2).addClass("btn-success");
+
+            $(btnId3).removeClass("btn-danger active");
+            $(btnId3).addClass("btn-success");
+
+            var btnId = '#btnresult_' + result + '_' + gameId;
+            $(btnId).addClass("btn-danger active");
+        })
+    .done(function () { })
+    .fail(function () { alert("An error occured - Please refresh"); });
+}
+
 function keyColor(d, i) {
     if (!window.colors){
         window.colors = function(){

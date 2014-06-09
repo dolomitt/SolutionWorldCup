@@ -18,7 +18,19 @@ namespace NetsizeWorldCup.Models
 
     public class PlaceBetModel
     {
+        [Required]
         public int GameId { get; set; }
+
+        [Required]
+        public int Result { get; set; }
+    }
+
+    public class SetGameResultModel
+    {
+        [Required]
+        public int GameId { get; set; }
+
+        [Required]
         public int Result { get; set; }
     }
 
@@ -75,22 +87,12 @@ namespace NetsizeWorldCup.Models
         [Display(Name = "Password")]
         public string Password { get; set; }
 
-        [Phone]
-        [Display(Name = "Phone")]
-        public string PhoneNumber { get; set; }
-
         [Display(Name = "Time Zone")]
         public string TimeZoneInfo { get; set; }
 
         [Url]
         [Display(Name = "Picture Url")]
         public string PictureUrl { get; set; }
-
-        [Display(Name = "City")]
-        public string City { get; set; }
-
-        [Display(Name = "Country")]
-        public string Country { get; set; }
 
         [DataType(DataType.Password)]
         [Display(Name = "Confirm password")]

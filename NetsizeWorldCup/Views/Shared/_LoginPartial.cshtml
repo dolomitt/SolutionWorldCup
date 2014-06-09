@@ -34,7 +34,6 @@
             </li>
             using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm" }))
             {
-                //test
                 @Html.AntiForgeryToken();
             }
         }
@@ -57,5 +56,14 @@
                 </a>
             </li>
         }
+        <li class="visible-xs">
+            <a href="#"
+               class="btn-navbar"
+               data-toggle="collapse"
+               data-target=".sidebar"
+               title="">
+                <i class="fa fa-bars"></i>
+            </a>
+        </li>
     </ul>
 </div>

@@ -27,6 +27,18 @@ namespace NetsizeWorldCup
         public decimal DrawOdd { get; set; }
         public decimal LossOdd { get; set; }
 
+        public decimal GetOdd(int result)
+        {
+            if (result == 1)
+                return WinOdd;
+            else if (result == 2)
+                return DrawOdd;
+            else if (result == 3)
+                return LossOdd;
+            else
+                return 0;
+        }
+
         public override string DisplayName
         {
             get { return Local.DisplayName + " - " + Visitor.DisplayName; }

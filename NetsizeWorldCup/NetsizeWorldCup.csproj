@@ -503,6 +503,7 @@
     <Content Include="Views\Account\Register - Copy.cshtml" />
     <Content Include="Views\Account\Login - Copy.cshtml" />
     <Content Include="Views\Shared\_EmptyLayout.cshtml" />
+    <Content Include="Views\Game\_NextGamePartial.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

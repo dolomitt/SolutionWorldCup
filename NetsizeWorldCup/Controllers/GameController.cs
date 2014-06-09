@@ -56,6 +56,36 @@ namespace NetsizeWorldCup.Controllers
             return Json(events, JsonRequestBehavior.AllowGet);
         }
 
+        [HttpPost]
+        [Authorize]
+        public async Task<JsonResult> SetResult(SetGameResultModel model)
+        {
+            try
+            {
+                if (!User.Identity.IsAuthenticated)
+                    return Json(new { Status = false });
+
+                if (User.Identity.Name != "dolomitt@gmail.com")
+                    return Json(new { Status = false });
+
+                string currentUserId = User.Identity.GetUserId();
+                var game = await db.Games.FirstOrDefaultAsync<Game>(g => g.ID == model.GameId);
+
+                if (game == null)
+                    return Json(new { Status = false });
+
+                game.Result = model.Result;
+
+                db.SaveChanges();
+
+                return Json(new { Status = true });
+            }
+            catch
+            {
+                return Json(new { Status = false });
+            }
+        }
+
         // GET: Game/Details/5
         public async Task<ActionResult> Details(int? id)
         {
