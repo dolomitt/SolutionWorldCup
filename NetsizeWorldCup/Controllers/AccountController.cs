@@ -1,45 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.EntityFramework;
-using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
-using Owin;
 using NetsizeWorldCup.Models;
 using System.Threading;
 using System.Globalization;
 
 namespace NetsizeWorldCup.Controllers
 {
-    [InternationalizationAttribute]
-    public abstract class BaseController : Controller
-    {
-        protected ApplicationDbContext db { get; set; }
-        protected ApplicationUserManager _userManager;
-
-        public ApplicationUserManager UserManager
-        {
-            get
-            {
-                return _userManager ?? HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>();
-            }
-            protected set
-            {
-                _userManager = value;
-            }
-        }
-
-        public BaseController()
-        {
-            db = new ApplicationDbContext();
-        }
-    }
-
     public class InternationalizationAttribute : ActionFilterAttribute
     {
         public override void OnActionExecuting(ActionExecutingContext filterContext)
@@ -50,34 +22,6 @@ namespace NetsizeWorldCup.Controllers
 
             Thread.CurrentThread.CurrentCulture = CultureInfo.GetCultureInfo(string.Format("{0}-{1}", language, culture));
             Thread.CurrentThread.CurrentUICulture = CultureInfo.GetCultureInfo(string.Format("{0}-{1}", language, culture));
-        }
-    }
-
-    public class UserModel
-    {
-        public string UserName { get; set; }
-        public decimal Score { get; set; }
-        public int BetCount { get; set; }
-
-        public string TimeZoneInfoId { get; set; }
-        private TimeZoneInfo _timeZone;
-        public TimeZoneInfo TimeZoneInfo
-        {
-            get
-            {
-                if (_timeZone == null)
-                    _timeZone = TimeZoneInfo.GetSystemTimeZones().FirstOrDefault<TimeZoneInfo>(i => i.Id == TimeZoneInfoId);
-
-                if (_timeZone == null)
-                    return TimeZoneInfo.Local;
-
-                return _timeZone;
-            }
-            set
-            {
-                TimeZoneInfoId = value.Id;
-                _timeZone = value;
-            }
         }
     }
 
@@ -100,7 +44,7 @@ namespace NetsizeWorldCup.Controllers
         [AllowAnonymous]
         public ActionResult Index()
         {
-            Dictionary<string, decimal> results = ComputeScores();
+            Dictionary<string, decimal> results = ComputeScores(this.db);
             Dictionary<string, int> betCounts = GetBetCount();
 
             return View(
@@ -129,10 +73,10 @@ namespace NetsizeWorldCup.Controllers
             return results;
         }
 
-        private Dictionary<string, decimal> ComputeScores()
+        public static Dictionary<string, decimal> ComputeScores(ApplicationDbContext db)
         {
-            if (HttpRuntime.Cache["Scores"] != null)
-                return (Dictionary<string, decimal>)HttpRuntime.Cache["Scores"];
+            if (HttpRuntime.Cache[CacheEnum.Scores] != null)
+                return (Dictionary<string, decimal>)HttpRuntime.Cache[CacheEnum.Scores];
 
             lock (_SyncRootScores)
             {
@@ -161,7 +105,7 @@ namespace NetsizeWorldCup.Controllers
                     }
                 }
 
-                HttpRuntime.Cache.Insert("Scores", results, null, DateTime.UtcNow.AddMinutes(15), System.Web.Caching.Cache.NoSlidingExpiration);
+                HttpRuntime.Cache.Insert(CacheEnum.Scores, results, null, DateTime.UtcNow.AddMinutes(30), System.Web.Caching.Cache.NoSlidingExpiration);
                 return results;
             }
         }
@@ -244,7 +188,7 @@ namespace NetsizeWorldCup.Controllers
                     await UserManager.SendEmailAsync(user.Id, "Netsize World Cup 2014 - Confirm your account", "Hey there, <br/> Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a><br/><br/> Netsize World Cup 2014");
 
                     //Removing score table
-                    HttpRuntime.Cache.Remove("Scores");
+                    HttpRuntime.Cache.Remove(CacheEnum.Scores);
 
                     return RedirectToAction("Index", "Home");
                 }

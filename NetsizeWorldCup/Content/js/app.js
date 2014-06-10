@@ -32,7 +32,7 @@ window.colors = function(){
 }();
 
 function SetBet(gameId, result) {
-    $.post("Bet/Place", { GameId: gameId, Result: result },
+    $.post("/Bet/Place", { GameId: gameId, Result: result },
         function () {
             var btnId1 = '#btnbet_1_' + gameId;
             var btnId2 = '#btnbet_2_' + gameId;
@@ -55,7 +55,7 @@ function SetBet(gameId, result) {
 }
 
 function SetResult(gameId, result) {
-    $.post("Game/SetResult", { GameId: gameId, Result: result },
+    $.post("/Game/SetResult", { GameId: gameId, Result: result },
         function () {
             var btnId1 = '#btnresult_1_' + gameId;
             var btnId2 = '#btnresult_2_' + gameId;
@@ -141,6 +141,8 @@ function initPjax(){
         this.$loaderWrap = $('.loader-wrap');
         this.pageLoadCallbacks = {};
         this.loading = false;
+        //tibo was here
+        $.pjax.defaults.timeout = 5000;
 
         this._resetResizeCallbacks();
         this._initOnResizeCallbacks();

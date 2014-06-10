@@ -57,6 +57,35 @@
     }
 </div>
 <div class="row">
+    <div class="col-md-2 col-sm-4 col-xs-6">
+        <div class="box">
+            <div class="big-text">@ViewBag.UserCount</div>
+            <div class="description">
+                <i class="fa fa-user"></i>
+                Players
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2 col-sm-4 col-xs-6">
+        <div class="box">
+            <div class="big-text">@ViewBag.RemainingGameCount</div>
+            <div class="description">
+                <i class="fa fa-calendar"></i>
+                Games to play
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2 col-sm-4 col-xs-6">
+        <div class="box">
+            <div class="big-text">@ViewBag.BetCount</div>
+            <div class="description">
+                <i class="fa fa-money"></i>
+                Bets
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
     @*@if (User.Identity.IsAuthenticated)
         {
             <div class="col-md-8">

@@ -17,6 +17,17 @@ using System.Web.Caching;
 
 namespace NetsizeWorldCup.Controllers
 {
+    public static class CacheEnum
+    {
+        public const string UserCount = "UserCount";
+        public const string RemainingGameCount = "RemainingGameCount";
+        public const string Scores = "Scores";
+        public const string WeatherInfo = "WeatherInfo";
+        public const string LastFeeds = "LastFeeds";
+        public const string BetCount = "BetCount";
+        public const string TeamList = "TeamList";
+    }
+
     public class HomeController : BaseController
     {
         static object _syncRootWeather = new object();
@@ -41,10 +52,45 @@ namespace NetsizeWorldCup.Controllers
 
             ViewBag.Feeds = GetLastFeeds();
             ViewBag.WeatherInfo = GetWeatherInfo();
+            ViewBag.UserCount = GetUserCount();
+            ViewBag.RemainingGameCount = GetRemainingGameCount();
+            ViewBag.BetCount = GetBetCount();
 
             ViewBag.NextGame = db.Games.Include(j => j.Local).Include(j => j.Visitor).Where<Game>(m => m.StartDate > DateTime.UtcNow).OrderBy<Game, DateTime>(k => k.StartDate).First<Game>();
 
             return View();
+        }
+
+        private int GetUserCount()
+        {
+            if (HttpRuntime.Cache[CacheEnum.UserCount] != null)
+                return (int)HttpRuntime.Cache[CacheEnum.UserCount];
+
+            int userCount = db.Users.Count<ApplicationUser>();
+            HttpRuntime.Cache.Insert(CacheEnum.UserCount, userCount, null, DateTime.UtcNow.AddMinutes(15), Cache.NoSlidingExpiration);
+            return userCount;
+        }
+
+        private int GetRemainingGameCount()
+        {
+            if (HttpRuntime.Cache[CacheEnum.RemainingGameCount] != null)
+                return (int)HttpRuntime.Cache[CacheEnum.RemainingGameCount];
+
+            int gameCount = db.Games.Where<Game>(g => g.StartDate > DateTime.UtcNow).Count<Game>();
+
+            HttpRuntime.Cache.Insert(CacheEnum.RemainingGameCount, gameCount, null, DateTime.UtcNow.AddMinutes(60), Cache.NoSlidingExpiration);
+            return gameCount;
+        }
+
+        private int GetBetCount()
+        {
+            if (HttpRuntime.Cache[CacheEnum.BetCount] != null)
+                return (int)HttpRuntime.Cache[CacheEnum.BetCount];
+
+            int betCount = db.Bets.Count<Bet>();
+
+            HttpRuntime.Cache.Insert(CacheEnum.BetCount, betCount, null, DateTime.UtcNow.AddMinutes(15), Cache.NoSlidingExpiration);
+            return betCount;
         }
 
         [AllowAnonymous]
@@ -68,7 +114,7 @@ namespace NetsizeWorldCup.Controllers
         public void SetLastOdds()
         {
             //ignoring games that have already been played
-            foreach (Game game in db.Games.Include(j => j.Local).Include(j => j.Visitor).Where<Game>(g=>g.StartDate > DateTime.UtcNow))
+            foreach (Game game in db.Games.Include(j => j.Local).Include(j => j.Visitor).Where<Game>(g => g.StartDate > DateTime.UtcNow))
             {
                 Models.Betclic.Match match = games[game.DisplayName];
 
@@ -88,8 +134,8 @@ namespace NetsizeWorldCup.Controllers
         {
             try
             {
-                if (HttpRuntime.Cache["WeatherInfo"] != null)
-                    return (WeatherInfo)HttpRuntime.Cache["WeatherInfo"];
+                if (HttpRuntime.Cache[CacheEnum.WeatherInfo] != null)
+                    return (WeatherInfo)HttpRuntime.Cache[CacheEnum.WeatherInfo];
 
                 lock (_syncRootWeather)
                 {
@@ -124,7 +170,7 @@ namespace NetsizeWorldCup.Controllers
                         var weatherData = JsonConvert.DeserializeObject<NetsizeWorldCup.Models.WeatherApi.Rootobject>(System.IO.File.ReadAllText(fileName));
 
                         WeatherInfo winfo = new WeatherInfo { ImageUrl = weatherData.forecast.txt_forecast.forecastday.First().icon_url, Text = weatherData.forecast.txt_forecast.forecastday.First().fcttext_metric };
-                        HttpRuntime.Cache.Insert("WeatherInfo", winfo, null, DateTime.UtcNow.AddMinutes(20), Cache.NoSlidingExpiration);
+                        HttpRuntime.Cache.Insert(CacheEnum.WeatherInfo, winfo, null, DateTime.UtcNow.AddMinutes(20), Cache.NoSlidingExpiration);
 
                         return winfo;
                     }
@@ -145,8 +191,8 @@ namespace NetsizeWorldCup.Controllers
 
         private List<FeedItem> GetLastFeeds()
         {
-            if (HttpRuntime.Cache["LastFeeds"] != null)
-                return (List<FeedItem>)HttpRuntime.Cache["LastFeeds"];
+            if (HttpRuntime.Cache[CacheEnum.LastFeeds] != null)
+                return (List<FeedItem>)HttpRuntime.Cache[CacheEnum.LastFeeds];
 
             try
             {
@@ -172,7 +218,7 @@ namespace NetsizeWorldCup.Controllers
                                 ImageUrl = j.Links[1].GetAbsoluteUri().ToString()
                             }).ToList<FeedItem>();
 
-                        HttpRuntime.Cache.Insert("LastFeeds", feeds, null, DateTime.UtcNow.AddMinutes(20), Cache.NoSlidingExpiration);
+                        HttpRuntime.Cache.Insert(CacheEnum.LastFeeds, feeds, null, DateTime.UtcNow.AddMinutes(20), Cache.NoSlidingExpiration);
 
                         return feeds;
                     }

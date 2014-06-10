@@ -38,11 +38,13 @@ namespace NetsizeWorldCup.Controllers
             return View(await db.Games.OrderBy<Game, DateTime>(j => j.StartDate).ToListAsync());
         }
 
-        public async Task<ActionResult> Calendar()
+        [AllowAnonymous]
+        public ActionResult Calendar()
         {
-            return View(await db.Games.OrderBy<Game, DateTime>(j => j.StartDate).ToListAsync());
+            return View();
         }
 
+        [AllowAnonymous]
         public JsonResult GetCalendarEvents()
         {
             var user = this.UserManager.FindById<ApplicationUser, string>(User.Identity.GetUserId());
@@ -81,7 +83,8 @@ namespace NetsizeWorldCup.Controllers
                 db.SaveChanges();
 
                 //Removing score table
-                HttpRuntime.Cache.Remove("Scores");
+                HttpRuntime.Cache.Remove(CacheEnum.Scores);
+                AccountController.ComputeScores(this.db);
 
                 return Json(new { Status = true });
             }

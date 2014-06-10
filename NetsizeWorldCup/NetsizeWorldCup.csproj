@@ -185,6 +185,7 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="ChatHub.cs" />
+    <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Controllers\BetController.cs" />
     <Compile Include="Controllers\GameController.cs" />
     <Compile Include="Controllers\TeamController.cs" />
@@ -212,6 +213,8 @@
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\ApplicationDbContext.cs" />
     <Compile Include="Models\Phase.cs" />
+    <Compile Include="Models\TeamModel.cs" />
+    <Compile Include="Models\UserModel.cs" />
     <Compile Include="Models\WeatherApi.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />

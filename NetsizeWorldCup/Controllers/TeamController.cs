@@ -9,6 +9,7 @@ using System.Web;
 using System.Web.Mvc;
 using NetsizeWorldCup;
 using NetsizeWorldCup.Models;
+using System.Web.Caching;
 
 namespace NetsizeWorldCup.Controllers
 {
@@ -19,10 +20,21 @@ namespace NetsizeWorldCup.Controllers
         {
         }
 
-        // GET: Team
-        public async Task<ActionResult> Index()
+        private List<TeamModel> GetTeams()
         {
-            return View(await db.Teams.OrderBy<Team, string>(t => t.Name).ToListAsync());
+            if (HttpRuntime.Cache[CacheEnum.TeamList] != null)
+                return (List<TeamModel>)HttpRuntime.Cache[CacheEnum.TeamList];
+
+            List<TeamModel> teams = db.Teams.OrderBy<Team, string>(t => t.Name).Select<Team, TeamModel>(t => new TeamModel { FlagUrl = t.FlagUrl, ID = t.ID, Name = t.Name }).ToList<TeamModel>();
+
+            HttpRuntime.Cache.Insert(CacheEnum.TeamList, teams, null, DateTime.UtcNow.AddMinutes(30), Cache.NoSlidingExpiration);
+            return teams;
+        }
+
+        // GET: Team
+        public ActionResult Index()
+        {
+            return View(GetTeams());
         }
 
         //// GET: Team/Details/5

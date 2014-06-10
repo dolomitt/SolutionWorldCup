@@ -28,7 +28,18 @@ namespace NetsizeWorldCup
 
                 SmtpService service = new SmtpService();
 
-                service.SendAsync(Server.MachineName + " " + ex.ToString());
+                string header = "No Headers";
+
+                try
+                {
+                    header = "IP=" + HttpContext.Current.Request.UserHostAddress + " User=" + User.Identity.Name + " Error=" + Server.MachineName;
+                }
+                catch
+                {
+
+                }
+
+                service.SendAsync(header + " " + ex.ToString());
 
                 Server.ClearError();
                 Response.Redirect("/Home/Error");
