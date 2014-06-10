@@ -47,9 +47,28 @@ namespace NetsizeWorldCup.Controllers
             return View();
         }
 
+        [AllowAnonymous]
+        public ActionResult Rules()
+        {
+            return View();
+        }
+
+        [AllowAnonymous]
+        public ActionResult Error()
+        {
+            return View();
+        }
+
+        [Authorize]
+        public ActionResult Chat()
+        {
+            return View();
+        }
+
         public void SetLastOdds()
         {
-            foreach (Game game in db.Games.Include(j => j.Local).Include(j => j.Visitor))
+            //ignoring games that have already been played
+            foreach (Game game in db.Games.Include(j => j.Local).Include(j => j.Visitor).Where<Game>(g=>g.StartDate > DateTime.UtcNow))
             {
                 Models.Betclic.Match match = games[game.DisplayName];
 

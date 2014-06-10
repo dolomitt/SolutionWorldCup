@@ -18,8 +18,25 @@ namespace NetsizeWorldCup
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
+        }
 
+        protected void Application_Error()
+        {
+            try
+            {
+                Exception ex = Server.GetLastError();
 
+                SmtpService service = new SmtpService();
+
+                service.SendAsync(Server.MachineName + " " + ex.ToString());
+
+                Server.ClearError();
+                Response.Redirect("/Home/Error");
+            }
+            catch
+            {
+
+            }
         }
     }
 }

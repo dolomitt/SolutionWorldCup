@@ -1,4 +1,4 @@
-﻿@model IEnumerable<NetsizeWorldCup.Models.ApplicationUser>
+﻿@model IEnumerable<NetsizeWorldCup.Controllers.UserModel>
 
 @{
     ViewBag.Title = "Players";
@@ -14,32 +14,35 @@
                 </h4>
             </header>
             <div class="body">
+                @{
+                    Dictionary<string, decimal> results = ViewBag.Results;
+                    Dictionary<string, int> betCounts = ViewBag.BetCounts;
+                }
                 <table class="table table-striped">
                     <thead>
                         <tr>
                             <th>
-                            </th>
-                            <th>
                                 @Html.DisplayNameFor(model => model.UserName)
                             </th>
-                            <th>TimeZone</th>
-                            <th>Daylight Saving</th>
+                            @*<th class="hidden-xs">TimeZone</th>
+                    <th>Daylight Saving</th>*@
+                            <th>Score</th>
+                            <th>Bet Count</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (NetsizeWorldCup.Models.ApplicationUser item in Model)
+                        @foreach (NetsizeWorldCup.Controllers.UserModel item in Model)
                         {
                             <tr>
                                 <td>
-                                    <a href="@item.ImageUrl" />
-                                </td>
-                                <td>
                                     @Html.DisplayFor(modelItem => item.UserName)
                                 </td>
-                                <td>
-                                    @item.TimeZoneInfo.DisplayName
-                                </td>
-                                <td>@(item.TimeZoneInfo.IsDaylightSavingTime(DateTime.Now)?"Yes":"No")</td>
+                                @*<td class="hidden-xs">
+                            @item.TimeZoneInfo.DisplayName
+                        </td>*@
+                                @*<td>@(item.TimeZoneInfo.IsDaylightSavingTime(DateTime.Now)?"Yes":"No")</td>*@
+                                <td>@item.Score.ToString("c")</td>
+                                <td>@item.BetCount</td>
                             </tr>
                         }
                     </tbody>

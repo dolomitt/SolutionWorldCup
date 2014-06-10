@@ -13,7 +13,7 @@
             </h4>
         </header>
         <div class="body">
-            <blockquote>You can bet on the next games to be played - This is a classic 1 X 2 (Local, Draw, Visitor) - Odds are downloaded from betclic. Bets will close when game start. Games displayed in your timezone @ViewBag.CurrentTimeZoneInfo.DisplayName</blockquote>
+            <blockquote><p>Please refer to the @Html.ActionLink("rules", "Rules", "Home")</p><p>Games displayed in your timezone @ViewBag.CurrentTimeZoneInfo.DisplayName</p></blockquote>
             <table class="table table-hover table-condensed table-images">
                 <thead>
                     <tr>
@@ -49,14 +49,14 @@
                                         <div class="btn-group nowrap" data-toggle="buttons" title="Place your bet">
                                             @for (int i = 1; i < 4; i++)
                                             {
-                                                <label class="@(ViewBag.UserBets != null && ViewBag.UserBets.Contains(item.ID + "_" + i) ? "btn btn-danger active" : "btn btn-success")" @(!User.Identity.IsAuthenticated || item.StartDate < DateTime.UtcNow ? "disabled" : "") onclick="return SetBet(@item.ID, @i)" id="btnbet_@string.Concat(i,"_",item.ID)">
+                                                <label class="@(ViewBag.UserBets != null && ViewBag.UserBets.Contains(item.ID + "_" + i) ? "btn btn-danger active" : "btn btn-success")" @(!User.Identity.IsAuthenticated || item.StartDate < DateTime.UtcNow || item.Result.HasValue ? "disabled" : "") onclick="return SetBet(@item.ID, @i)" id="btnbet_@string.Concat(i,"_",item.ID)">
                                                     @item.GetOdd(i)
                                                 </label>
                                             }
                                         </div>
                                     </p>
                                 }
-                                @if (IsAdmin || item.Result.HasValue)
+                                @if (IsAdmin || item.Result.HasValue || !User.Identity.IsAuthenticated)
                                 {
                                     <p>
                                         <div class="btn-group nowrap" data-toggle="buttons" title="Game Result">

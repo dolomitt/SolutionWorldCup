@@ -77,6 +77,14 @@ function SetResult(gameId, result) {
     .fail(function () { alert("An error occured - Please refresh"); });
 }
 
+//to be moved
+$("#chat-messages").slimscroll({
+    height: '240px',
+    size: '5px',
+    alwaysVisible: true,
+    railVisible: true
+});
+
 function keyColor(d, i) {
     if (!window.colors){
         window.colors = function(){

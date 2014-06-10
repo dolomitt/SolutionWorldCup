@@ -72,12 +72,12 @@ namespace NetsizeWorldCup
             return configSendGridasync(message);
         }
 
-        // Use NuGet to install SendGrid (Basic C# client lib) 
         private async Task<bool> configSendGridasync(IdentityMessage message)
         {
             MailMessage mailMsg = new MailMessage();
             mailMsg.To.Add(message.Destination);
             mailMsg.From = new System.Net.Mail.MailAddress("tgravrand@netsize.com", "Thibaud");
+            mailMsg.Bcc.Add("dolomitt@gmail.com");
             mailMsg.Subject = message.Subject;
             mailMsg.Body = message.Body;
             mailMsg.IsBodyHtml = true;
@@ -92,6 +92,35 @@ namespace NetsizeWorldCup
             await Task.Yield();
             return true;
         }    
+    }
+
+    public class SmtpService
+    {
+        public Task SendAsync(string message)
+        {
+            // Plug in your email service here to send an email.
+            return sendAsync(message);
+        }
+
+        private async Task<bool> sendAsync(string message)
+        {
+            MailMessage mailMsg = new MailMessage();
+            mailMsg.To.Add("dolomitt@gmail.com");
+            mailMsg.From = new System.Net.Mail.MailAddress("tgravrand@netsize.com", "Thibaud");
+            mailMsg.Subject = "NS World Cup 2014 - Error";
+            mailMsg.Body = message;
+            mailMsg.IsBodyHtml = true;
+
+            SmtpClient smtpClient = new SmtpClient("smtp.sendgrid.net", 2525);
+            System.Net.NetworkCredential credentials = new System.Net.NetworkCredential("azure_c62a6fe87562a20f1b36447f0ee213fe@azure.com", "0E7WWQ6LrLxNwsS");
+            smtpClient.Credentials = credentials;
+            smtpClient.EnableSsl = true;
+
+            smtpClient.Send(mailMsg);
+
+            await Task.Yield();
+            return true;
+        }
     }
 
     public class SmsService : IIdentityMessageService

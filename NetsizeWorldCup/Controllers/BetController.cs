@@ -3,6 +3,7 @@ using System.Linq;
 using System.Web.Mvc;
 using Microsoft.AspNet.Identity;
 using System;
+using System.Threading.Tasks;
 
 namespace NetsizeWorldCup.Controllers
 {
@@ -17,7 +18,7 @@ namespace NetsizeWorldCup.Controllers
         // POST: Bet/Create
         [HttpPost]
         [Authorize]
-        public JsonResult Place(PlaceBetModel placedBet)
+        public async Task<JsonResult> Place(PlaceBetModel placedBet)
         {
             if (!User.Identity.IsAuthenticated)
                 return Json(new { Status = false });
@@ -50,7 +51,7 @@ namespace NetsizeWorldCup.Controllers
                 bet.LossOdd = game.LossOdd;
             }
 
-            db.SaveChanges();
+            await db.SaveChangesAsync();
 
             return Json(new { Status = true });
         }

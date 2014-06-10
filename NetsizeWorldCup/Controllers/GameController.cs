@@ -34,6 +34,7 @@ namespace NetsizeWorldCup.Controllers
             if (User.Identity.IsAuthenticated && user != null)
                 ViewBag.UserBets = db.Bets.Where<Bet>(b => b.Owner.Id == currentUserId).Select<Bet, string>(b => b.Game.ID + "_" + b.Forecast).ToList<string>();
 
+
             return View(await db.Games.OrderBy<Game, DateTime>(j => j.StartDate).ToListAsync());
         }
 

@@ -11,9 +11,12 @@ using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using Owin;
 using NetsizeWorldCup.Models;
+using System.Threading;
+using System.Globalization;
 
 namespace NetsizeWorldCup.Controllers
 {
+    [InternationalizationAttribute]
     public abstract class BaseController : Controller
     {
         protected ApplicationDbContext db { get; set; }
@@ -38,6 +41,26 @@ namespace NetsizeWorldCup.Controllers
         }
     }
 
+    public class InternationalizationAttribute : ActionFilterAttribute
+    {
+        public override void OnActionExecuting(ActionExecutingContext filterContext)
+        {
+
+            string language = (string)filterContext.RouteData.Values["language"] ?? "fr";
+            string culture = (string)filterContext.RouteData.Values["culture"] ?? "FR";
+
+            Thread.CurrentThread.CurrentCulture = CultureInfo.GetCultureInfo(string.Format("{0}-{1}", language, culture));
+            Thread.CurrentThread.CurrentUICulture = CultureInfo.GetCultureInfo(string.Format("{0}-{1}", language, culture));
+        }
+    }
+
+    public class UserModel
+    {
+        public string UserName { get; set; }
+        public decimal Score { get; set; }
+        public int BetCount { get; set; }
+    }
+
     [Authorize]
     public class AccountController : BaseController
     {
@@ -52,11 +75,65 @@ namespace NetsizeWorldCup.Controllers
         }
 
         // GET: Team
-        //[OutputCache(Duration = 60)]
         [AllowAnonymous]
         public ActionResult Index()
         {
-            return View(UserManager.Users.ToList<ApplicationUser>());
+            Dictionary<string, decimal> results = ComputeScores();
+            Dictionary<string, int> betCounts = GetBetCount();
+
+            return View(
+                UserManager.Users.ToList<ApplicationUser>()
+                .Select<ApplicationUser, UserModel>(
+                i =>
+                    new UserModel
+                    {
+                        UserName = i.UserName,
+                        Score = results[i.Id],
+                        BetCount = betCounts[i.Id]
+                    }
+                        )
+                        .OrderByDescending<UserModel, decimal>(u => u.Score).ToList());
+        }
+
+
+        private Dictionary<string, int> GetBetCount()
+        {
+            Dictionary<string, int> results = new Dictionary<string, int>();
+
+            foreach (ApplicationUser user in db.Users.ToList<ApplicationUser>())
+                results.Add(user.Id, db.Bets.Count<Bet>(b => b.Owner.Id == user.Id));
+
+            return results;
+        }
+
+        private Dictionary<string, decimal> ComputeScores()
+        {
+            Dictionary<string, decimal> results = new Dictionary<string, decimal>();
+
+            foreach (ApplicationUser user in db.Users)
+                results.Add(user.Id, 0);
+
+            foreach (Game game in db.Games.Where<Game>(g => g.Result.HasValue).ToList<Game>())
+            {
+                foreach (Bet bet in db.Bets.Where<Bet>(b => b.Game.ID == game.ID).ToList<Bet>())
+                {
+                    //we have a winner
+                    if (game.Result.Value == bet.Forecast)
+                    {
+                        decimal weight = 1;
+
+                        if (game.Phase.ID > 1 && game.Phase.ID < 5)
+                            weight = 2;
+
+                        if (game.Phase.ID == 5)
+                            weight = 4;
+
+                        results[bet.Owner.Id] += weight * game.GetOdd(game.Result.Value);
+                    }
+                }
+            }
+
+            return results;
         }
 
         //
@@ -79,7 +156,7 @@ namespace NetsizeWorldCup.Controllers
             {
                 var user = await UserManager.FindByEmailAsync(model.Email);
 
-                if (user==null)
+                if (user == null)
                     ModelState.AddModelError("", "Invalid email or password.");
 
                 user = await UserManager.FindAsync(user.UserName, model.Password);
@@ -134,7 +211,7 @@ namespace NetsizeWorldCup.Controllers
                     // Send an email with this link
                     string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
                     var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
-                    await UserManager.SendEmailAsync(user.Id, "Confirm your account", "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
+                    await UserManager.SendEmailAsync(user.Id, "Netsize World Cup 2014 - Confirm your account", "Hey there, <br/> Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a><br/><br/> Netsize World Cup 2014");
 
                     return RedirectToAction("Index", "Home");
                 }
@@ -187,7 +264,7 @@ namespace NetsizeWorldCup.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = await UserManager.FindByNameAsync(model.Email);
+                var user = await UserManager.FindByEmailAsync(model.Email);
                 if (user == null || !(await UserManager.IsEmailConfirmedAsync(user.Id)))
                 {
                     ModelState.AddModelError("", "The user either does not exist or is not confirmed.");
@@ -198,7 +275,7 @@ namespace NetsizeWorldCup.Controllers
                 // Send an email with this link
                 string code = await UserManager.GeneratePasswordResetTokenAsync(user.Id);
                 var callbackUrl = Url.Action("ResetPassword", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
-                await UserManager.SendEmailAsync(user.Id, "Reset Password", "Please reset your password by clicking <a href=\"" + callbackUrl + "\">here</a>");
+                await UserManager.SendEmailAsync(user.Id, "Netsize World Cup 2014 - Reset Password", "Hey there, <br/> Please reset your password by clicking <a href=\"" + callbackUrl + "\">here</a><br/><br/> Netsize World Cup 2014");
                 return RedirectToAction("ForgotPasswordConfirmation", "Account");
             }
 
