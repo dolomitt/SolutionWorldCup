@@ -10,5 +10,6 @@ namespace NetsizeWorldCup.Models
         public string FlagUrl { get; set; }
         public string Name { get; set; }
         public int ID { get; set; }
+        public string Group { get; set; }
     }
 }

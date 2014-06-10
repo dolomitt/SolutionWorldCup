@@ -25,7 +25,7 @@ namespace NetsizeWorldCup.Controllers
             if (HttpRuntime.Cache[CacheEnum.TeamList] != null)
                 return (List<TeamModel>)HttpRuntime.Cache[CacheEnum.TeamList];
 
-            List<TeamModel> teams = db.Teams.OrderBy<Team, string>(t => t.Name).Select<Team, TeamModel>(t => new TeamModel { FlagUrl = t.FlagUrl, ID = t.ID, Name = t.Name }).ToList<TeamModel>();
+            List<TeamModel> teams = db.Teams.OrderBy<Team, string>(t => t.Group.Name + "_" + t.Name).Select<Team, TeamModel>(t => new TeamModel { FlagUrl = t.FlagUrl, ID = t.ID, Name = t.Name, Group = t.Group.Name }).ToList<TeamModel>();
 
             HttpRuntime.Cache.Insert(CacheEnum.TeamList, teams, null, DateTime.UtcNow.AddMinutes(30), Cache.NoSlidingExpiration);
             return teams;

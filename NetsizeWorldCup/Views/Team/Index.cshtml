@@ -1,43 +1,53 @@
-﻿@model IEnumerable<NetsizeWorldCup.Models.TeamModel>
+﻿@using System.Linq;
+@model IEnumerable<NetsizeWorldCup.Models.TeamModel>
 
 @{
     ViewBag.Title = "Teams";
 }
 
-<div class="col-md-12 col-sm-12 col-lg-6">
-    <section class="widget">
-        <header>
-            <h4>
-                <i class="fa fa-table"></i>
-                Teams
-            </h4>
-        </header>
-        <div class="body">
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th class="hidden-xs-portrait">#</th>
-                        <th>@Html.DisplayNameFor(model => model.FlagUrl)</th>
-                        <th>@Html.DisplayNameFor(model => model.Name)</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in Model)
-                    {
+@for (int i = 0; i < 8; i++)
+{
+    <div class="col-sm-12 col-md-8 col-lg-4">
+        <section class="widget">
+            @{
+    var firstItem = Model.ElementAt<NetsizeWorldCup.Models.TeamModel>(i * 4);
+            }
+            <header>
+                <h4>
+                    <i class="fa fa-table"></i>
+                    Group @firstItem.Group
+                </h4>
+            </header>
+            <div class="body">
+                <table class="table table-striped">
+                    <thead>
                         <tr>
-                            <td class="hidden-xs-portrait">
-                                @Html.DisplayFor(modelItem => item.ID)
-                            </td>
-                            <td>
-                                <img src="@item.FlagUrl" style="box-shadow: 0px 0px 10px #888;border-radius: 5px;" />
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.Name)
-                            </td>
+                            @*<th class="hidden-xs-portrait">#</th>*@
+                            <th></th>
+                            <th>@*@Html.DisplayNameFor(model => model.Name)*@</th>
                         </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
-    </section>
-</div>
+                    </thead>
+                    <tbody>
+                        @for (int j = 0; j < 4; j++)
+                        {
+                            <tr>
+                                @{
+                            var item = Model.ElementAt<NetsizeWorldCup.Models.TeamModel>(i * 4 + j);
+                                }
+                                @*<td class="hidden-xs-portrait">
+                                    @item.ID
+                                </td>*@
+                                <td>
+                                    <img src="@item.FlagUrl" style="box-shadow: 0px 0px 10px #888;border-radius: 5px;" />
+                                </td>
+                                <td>
+                                    @item.Name
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+}

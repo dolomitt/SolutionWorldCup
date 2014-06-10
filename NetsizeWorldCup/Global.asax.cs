@@ -42,7 +42,10 @@ namespace NetsizeWorldCup
                 service.SendAsync(header + " " + ex.ToString());
 
                 Server.ClearError();
+
+#if DEBUG
                 Response.Redirect("/Home/Error");
+#endif
             }
             catch
             {
