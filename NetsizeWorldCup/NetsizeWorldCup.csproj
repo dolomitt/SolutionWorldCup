@@ -537,6 +537,7 @@
     <Content Include="Views\Home\Rules.cshtml" />
     <Content Include="Views\Home\_ChatPartial.cshtml" />
     <Content Include="Views\Shared\_PjaxLayout.cshtml" />
+    <Content Include="Views\Shared\_GoogleAnalyticsPartial.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

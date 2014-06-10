@@ -16,46 +16,40 @@
     <nav id="sidebar" class="sidebar nav-collapse collapse">
         <ul id="side-nav" class="side-nav">
             <li class="panel active">
-                <a href="/Home/Index">
+                <a href="@Url.Action("Index", "Home")">
                     <i class="fa fa-home"></i>
                     <span class="name">Dashboard</span>
                 </a>
-                @*@Html.ActionLink("Dashboard", "Index", "Home")*@
             </li>
             <li class="panel">
-                <a href="/Account/Index">
+                <a href="@Url.Action("Index", "Account")">
                     <i class="fa fa-user"></i>
                     <span class="name">Users</span>
                 </a>
-                @*@Html.ActionLink("Users", "Index", "Account")*@
             </li>
             <li class="panel">
-                <a href="/Team/Index">
+                <a href="@Url.Action("Index", "Team")">
                     <i class="fa fa-users"></i>
                     <span class="name">Teams</span>
                 </a>
-                @*@Html.ActionLink("Teams", "Index", "Team")*@
             </li>
             <li class="panel">
-                <a href="/Game/Index">
+                <a href="@Url.Action("Index", "Game")">
                     <i class="fa fa-star"></i>
                     <span class="name">Games</span>
                 </a>
-                @*@Html.ActionLink("Games", "Index", "Game")*@
             </li>
             <li class="panel">
-                <a href="/Game/Calendar">
+                <a href="@Url.Action("Calendar", "Game")">
                     <i class="fa fa-calendar"></i>
                     <span class="name">Calendar</span>
                 </a>
-                @*@Html.ActionLink("Calendar", "Calendar", "Game")*@
             </li>
             <li class="panel">
-                <a href="/Home/Rules">
+                <a href="@Url.Action("Rules", "Home")">
                     <i class="fa fa-question-circle"></i>
                     <span class="name">Rules</span>
                 </a>
-                @*@Html.ActionLink("Rules", "Rules", "Home")*@
             </li>
             @if (!Request.IsAuthenticated)
             {
@@ -82,21 +76,8 @@
         <header class="page-header">
             @Html.Partial("_LoginPartial")
         </header>
-        @if (System.Configuration.ConfigurationManager.AppSettings["Environment"] == "PROD")
-        {
-            <script>
-                (function (i, s, o, g, r, a, m) {
-                    i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
-                        (i[r].q = i[r].q || []).push(arguments)
-                    }, i[r].l = 1 * new Date(); a = s.createElement(o),
-                    m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
-                })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
-
-                ga('create', 'UA-51753642-1', 'nswc2014.azurewebsites.net');
-                ga('send', 'pageview');
-            </script>
-        }
         <div class="content container">
+            @Html.Partial("_GoogleAnalyticsPartial")
             @RenderBody()
         </div>
         <div class="loader-wrap hiding hide">
