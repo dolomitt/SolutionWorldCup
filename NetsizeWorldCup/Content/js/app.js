@@ -141,8 +141,6 @@ function initPjax(){
         this.$loaderWrap = $('.loader-wrap');
         this.pageLoadCallbacks = {};
         this.loading = false;
-        //tibo was here
-        $.pjax.defaults.timeout = 5000;
 
         this._resetResizeCallbacks();
         this._initOnResizeCallbacks();
