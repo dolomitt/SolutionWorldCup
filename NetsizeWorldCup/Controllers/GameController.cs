@@ -80,6 +80,9 @@ namespace NetsizeWorldCup.Controllers
 
                 db.SaveChanges();
 
+                //Removing score table
+                HttpRuntime.Cache.Remove("Scores");
+
                 return Json(new { Status = true });
             }
             catch

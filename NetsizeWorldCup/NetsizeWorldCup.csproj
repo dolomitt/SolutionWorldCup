@@ -190,6 +190,11 @@
     <Compile Include="Controllers\TeamController.cs" />
     <Compile Include="DateTimeHelper.cs" />
     <Compile Include="GameContext.cs" />
+    <Compile Include="Migrations\201406091424419_InitialCreate.cs" />
+    <Compile Include="Migrations\201406091424419_InitialCreate.Designer.cs">
+      <DependentUpon>201406091424419_InitialCreate.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\BetClic.cs" />
     <Compile Include="Models\Group.cs" />
     <Compile Include="Models\ApplicationUser.cs" />
@@ -524,8 +529,6 @@
     <Content Include="Views\Game\Index.cshtml" />
     <Content Include="Views\Game\Calendar.cshtml" />
     <Content Include="Views\Account\Index.cshtml" />
-    <Content Include="Views\Account\Register - Copy.cshtml" />
-    <Content Include="Views\Account\Login - Copy.cshtml" />
     <Content Include="Views\Shared\_EmptyLayout.cshtml" />
     <Content Include="Views\Game\_NextGamePartial.cshtml" />
     <Content Include="Views\Home\Rules.cshtml" />
@@ -543,6 +546,11 @@
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\201406091424419_InitialCreate.resx">
+      <DependentUpon>201406091424419_InitialCreate.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

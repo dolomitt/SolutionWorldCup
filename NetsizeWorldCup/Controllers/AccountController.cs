@@ -20,7 +20,6 @@ namespace NetsizeWorldCup.Controllers
     public abstract class BaseController : Controller
     {
         protected ApplicationDbContext db { get; set; }
-
         protected ApplicationUserManager _userManager;
 
         public ApplicationUserManager UserManager
@@ -59,11 +58,34 @@ namespace NetsizeWorldCup.Controllers
         public string UserName { get; set; }
         public decimal Score { get; set; }
         public int BetCount { get; set; }
+
+        public string TimeZoneInfoId { get; set; }
+        private TimeZoneInfo _timeZone;
+        public TimeZoneInfo TimeZoneInfo
+        {
+            get
+            {
+                if (_timeZone == null)
+                    _timeZone = TimeZoneInfo.GetSystemTimeZones().FirstOrDefault<TimeZoneInfo>(i => i.Id == TimeZoneInfoId);
+
+                if (_timeZone == null)
+                    return TimeZoneInfo.Local;
+
+                return _timeZone;
+            }
+            set
+            {
+                TimeZoneInfoId = value.Id;
+                _timeZone = value;
+            }
+        }
     }
 
     [Authorize]
     public class AccountController : BaseController
     {
+        static object _SyncRootScores = new object();
+
         public AccountController()
             : base()
         {
@@ -89,7 +111,8 @@ namespace NetsizeWorldCup.Controllers
                     {
                         UserName = i.UserName,
                         Score = results[i.Id],
-                        BetCount = betCounts[i.Id]
+                        BetCount = betCounts[i.Id],
+                        TimeZoneInfoId = i.TimeZoneInfoId
                     }
                         )
                         .OrderByDescending<UserModel, decimal>(u => u.Score).ToList());
@@ -108,32 +131,39 @@ namespace NetsizeWorldCup.Controllers
 
         private Dictionary<string, decimal> ComputeScores()
         {
-            Dictionary<string, decimal> results = new Dictionary<string, decimal>();
+            if (HttpRuntime.Cache["Scores"] != null)
+                return (Dictionary<string, decimal>)HttpRuntime.Cache["Scores"];
 
-            foreach (ApplicationUser user in db.Users)
-                results.Add(user.Id, 0);
-
-            foreach (Game game in db.Games.Where<Game>(g => g.Result.HasValue).ToList<Game>())
+            lock (_SyncRootScores)
             {
-                foreach (Bet bet in db.Bets.Where<Bet>(b => b.Game.ID == game.ID).ToList<Bet>())
+                Dictionary<string, decimal> results = new Dictionary<string, decimal>();
+
+                foreach (ApplicationUser user in db.Users)
+                    results.Add(user.Id, 0);
+
+                foreach (Game game in db.Games.Where<Game>(g => g.Result.HasValue).ToList<Game>())
                 {
-                    //we have a winner
-                    if (game.Result.Value == bet.Forecast)
+                    foreach (Bet bet in db.Bets.Where<Bet>(b => b.Game.ID == game.ID).ToList<Bet>())
                     {
-                        decimal weight = 1;
+                        //we have a winner
+                        if (game.Result.Value == bet.Forecast)
+                        {
+                            decimal weight = 1;
 
-                        if (game.Phase.ID > 1 && game.Phase.ID < 5)
-                            weight = 2;
+                            if (game.Phase.ID > 1 && game.Phase.ID < 5)
+                                weight = 2;
 
-                        if (game.Phase.ID == 5)
-                            weight = 4;
+                            if (game.Phase.ID == 5)
+                                weight = 4;
 
-                        results[bet.Owner.Id] += weight * game.GetOdd(game.Result.Value);
+                            results[bet.Owner.Id] += weight * game.GetOdd(game.Result.Value);
+                        }
                     }
                 }
-            }
 
-            return results;
+                HttpRuntime.Cache.Insert("Scores", results, null, DateTime.UtcNow.AddMinutes(15), System.Web.Caching.Cache.NoSlidingExpiration);
+                return results;
+            }
         }
 
         //
@@ -212,6 +242,9 @@ namespace NetsizeWorldCup.Controllers
                     string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
                     var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
                     await UserManager.SendEmailAsync(user.Id, "Netsize World Cup 2014 - Confirm your account", "Hey there, <br/> Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a><br/><br/> Netsize World Cup 2014");
+
+                    //Removing score table
+                    HttpRuntime.Cache.Remove("Scores");
 
                     return RedirectToAction("Index", "Home");
                 }
@@ -312,10 +345,10 @@ namespace NetsizeWorldCup.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = await UserManager.FindByNameAsync(model.Email);
+                var user = await UserManager.FindByEmailAsync(model.Email);
                 if (user == null)
                 {
-                    ModelState.AddModelError("", "No user found.");
+                    ModelState.AddModelError("", "Email not found.");
                     return View();
                 }
                 IdentityResult result = await UserManager.ResetPasswordAsync(user.Id, model.Code, model.Password);

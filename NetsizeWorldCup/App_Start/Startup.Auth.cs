@@ -17,7 +17,9 @@ namespace NetsizeWorldCup
         public void ConfigureAuth(IAppBuilder app)
         {
             //// Initializes and seeds the database.
+#if DEBUG
             Database.SetInitializer<ApplicationDbContext>(new ApplicationDbInitializer());
+#endif
 
             // Configure the db context and user manager to use a single instance per request
             app.CreatePerOwinContext(ApplicationDbContext.Create);
