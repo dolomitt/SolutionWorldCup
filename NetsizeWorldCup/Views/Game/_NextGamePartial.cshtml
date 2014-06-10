@@ -1,23 +1,49 @@
 ﻿@using NetsizeWorldCup;
 
-<table class="table table-condensed table-images">
-    <tbody>
-        <tr>
-            <td class="hidden-xs-portrait text-right">
-                <img src="@ViewBag.NextGame.Local.FlagUrl" style="width: 70px; height: 46px" alt="">
-            </td>
-            <td class="text-center">
-                <p>
-                    @ViewBag.NextGame.Local.DisplayName - @ViewBag.NextGame.Visitor.DisplayName
-                </p>
-                <p>
-                    @ViewBag.NextGame.WinOdd / @ViewBag.NextGame.DrawOdd / @ViewBag.NextGame.LossOdd
-                </p>
-            </td>
-            <td class="hidden-xs-portrait">
-                <img src="@ViewBag.NextGame.Visitor.FlagUrl" style="width: 70px; height: 46px" alt="">
-            </td>
-        </tr>
-    </tbody>
-</table>
-<blockquote><p>@TimeZoneInfo.ConvertTimeFromUtc(ViewBag.NextGame.StartDate, (TimeZoneInfo)ViewBag.CurrentTimeZoneInfo).ToShortDateString() @TimeZoneInfo.ConvertTimeFromUtc(ViewBag.NextGame.StartDate, (TimeZoneInfo)ViewBag.CurrentTimeZoneInfo).ToShortTimeString()</p> <p>Current TimeZone: @ViewBag.CurrentTimeZoneInfo.DisplayName</p></blockquote>
+@{
+    string result = string.Empty;
+    DateTime dt = (DateTime)ViewBag.NextGame.StartDate;
+    TimeZoneInfo tzi = (TimeZoneInfo)ViewBag.CurrentTimeZoneInfo;
+
+    if (dt.DayOfYear == DateTime.UtcNow.DayOfYear)
+    {
+        result = TimeZoneInfo.ConvertTimeFromUtc(dt, tzi).ToShortTimeString();
+    }
+    else
+    {
+        result = TimeZoneInfo.ConvertTimeFromUtc(dt, tzi).ToShortDateString();
+    }
+}
+<div class="col-md-4">
+    <section class="widget">
+        <header>
+            <h4>
+                <i class="eicon-flag"></i>
+                Next Game <small>@result</small>
+            </h4>
+        </header>
+        <div class="body">
+            <table class="table table-condensed table-images">
+                <tbody>
+                    <tr>
+                        <td class="hidden-xs-portrait text-right">
+                            <img src="@ViewBag.NextGame.Local.FlagUrl" style="width: 70px; height: 46px" alt="">
+                        </td>
+                        <td class="text-center">
+                            <p>
+                                @ViewBag.NextGame.Local.DisplayName - @ViewBag.NextGame.Visitor.DisplayName
+                            </p>
+                            <p>
+                                @ViewBag.NextGame.WinOdd | @ViewBag.NextGame.DrawOdd | @ViewBag.NextGame.LossOdd
+                            </p>
+                        </td>
+                        <td class="hidden-xs-portrait">
+                            <img src="@ViewBag.NextGame.Visitor.FlagUrl" style="width: 70px; height: 46px" alt="">
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <blockquote><p>Current TimeZone: @ViewBag.CurrentTimeZoneInfo.DisplayName</p></blockquote>
+        </div>
+    </section>
+</div>
