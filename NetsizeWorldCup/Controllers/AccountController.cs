@@ -16,12 +16,36 @@ namespace NetsizeWorldCup.Controllers
     {
         public override void OnActionExecuting(ActionExecutingContext filterContext)
         {
+            //string language = (string)filterContext.RouteData.Values["language"] ?? "fr";
+            //string culture = (string)filterContext.RouteData.Values["culture"] ?? "FR";
 
-            string language = (string)filterContext.RouteData.Values["language"] ?? "fr";
-            string culture = (string)filterContext.RouteData.Values["culture"] ?? "FR";
+            //Thread.CurrentThread.CurrentCulture = CultureInfo.GetCultureInfo(string.Format("{0}-{1}", language, culture));
 
-            Thread.CurrentThread.CurrentCulture = CultureInfo.GetCultureInfo(string.Format("{0}-{1}", language, culture));
-            Thread.CurrentThread.CurrentUICulture = CultureInfo.GetCultureInfo(string.Format("{0}-{1}", language, culture));
+            
+            //Thread.CurrentThread.CurrentUICulture = CultureInfo.GetCultureInfo(string.Format("{0}-{1}", language, culture));
+
+            Thread.CurrentThread.CurrentCulture = ResolveCulture();
+            Thread.CurrentThread.CurrentUICulture = ResolveCulture();
+        }
+
+
+
+        public static CultureInfo ResolveCulture()
+        {
+            string[] languages = HttpContext.Current.Request.UserLanguages;
+
+            if (languages == null || languages.Length == 0)
+                return CultureInfo.GetCultureInfo(string.Format("{0}-{1}", "en", "US"));
+
+            try
+            {
+                string language = languages[0].ToLowerInvariant().Trim();
+                return CultureInfo.CreateSpecificCulture(language);
+            }
+            catch (ArgumentException)
+            {
+                return CultureInfo.GetCultureInfo(string.Format("{0}-{1}", "en", "US"));
+            }
         }
     }
 
