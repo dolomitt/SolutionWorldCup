@@ -170,7 +170,7 @@ namespace NetsizeWorldCup.Controllers
             //ignoring games that have already been played
             foreach (Game game in db.Games.Include(j => j.Local).Include(j => j.Visitor).Where<Game>(g => g.StartDate > DateTime.UtcNow))
             {
-                Models.Betclic.Match match = games[game.DisplayName];
+                Models.Betclic.Match match = games[game.DisplayName + " - " + game.StartDate.ToShortDateString()];
 
                 if (match != null)
                 {
@@ -342,7 +342,7 @@ namespace NetsizeWorldCup.Controllers
                     var sport = result.sport.First(s => s.name == "Football");
                     var wcEvent = sport.@event.First(e => e.name == "World Cup");
 
-                    games = wcEvent.match.ToDictionary<Models.Betclic.Match, string>(i => i.name);
+                    games = wcEvent.match.ToDictionary<Models.Betclic.Match, string>(i => i.name + " - " + i.start_date.AddHours(-1).ToShortDateString());
 
                     //We had an update so we need to reset the db
                     if (fileUpdated)
