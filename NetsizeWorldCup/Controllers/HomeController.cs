@@ -104,6 +104,9 @@ namespace NetsizeWorldCup.Controllers
         {
             try
             {
+                if (System.Configuration.ConfigurationManager.AppSettings["GoogleAnalytics"] != "Yes")
+                    return "Disabled";
+
                 if (HttpRuntime.Cache[CacheEnum.GooglePageViews] != null)
                     return (string)HttpRuntime.Cache[CacheEnum.GooglePageViews];
 
