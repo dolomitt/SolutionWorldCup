@@ -1,19 +1,24 @@
-﻿using NetsizeWorldCup.Models;
+﻿using Google.Apis.Analytics.v3;
+using Google.Apis.Auth.OAuth2;
+using Google.Apis.Services;
+using Microsoft.AspNet.Identity;
+using NetsizeWorldCup.Models;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Data;
 using System.Data.Entity;
+using System.IO;
+using System.Linq;
+using System.Net;
+using System.Security.Cryptography.X509Certificates;
+using System.ServiceModel.Syndication;
+using System.Threading.Tasks;
 using System.Web;
+using System.Web.Caching;
 using System.Web.Mvc;
 using System.Xml;
-using System.ServiceModel.Syndication;
-using System.Net;
 using System.Xml.Serialization;
-using System.IO;
-using Newtonsoft.Json;
-using Microsoft.AspNet.Identity;
-using System.Web.Caching;
 
 namespace NetsizeWorldCup.Controllers
 {
@@ -26,6 +31,7 @@ namespace NetsizeWorldCup.Controllers
         public const string LastFeeds = "LastFeeds";
         public const string BetCount = "BetCount";
         public const string TeamList = "TeamList";
+        public const string GooglePageViews = "GooglePageViews";
     }
 
     public class HomeController : BaseController
@@ -40,10 +46,10 @@ namespace NetsizeWorldCup.Controllers
         Dictionary<string, Models.Betclic.Match> games;
 
         [AllowAnonymous]
-        public ActionResult Index()
+        public async Task<ActionResult> Index()
         {
             string currentUserId = User.Identity.GetUserId();
-            var user = db.Users.FirstOrDefault<ApplicationUser>(u => u.Id == currentUserId);
+            var user = await db.Users.FirstOrDefaultAsync<ApplicationUser>(u => u.Id == currentUserId);
 
             if (user != null)
                 ViewBag.CurrentTimeZoneInfo = user.TimeZoneInfo;
@@ -52,45 +58,75 @@ namespace NetsizeWorldCup.Controllers
 
             ViewBag.Feeds = GetLastFeeds();
             ViewBag.WeatherInfo = GetWeatherInfo();
-            ViewBag.UserCount = GetUserCount();
-            ViewBag.RemainingGameCount = GetRemainingGameCount();
-            ViewBag.BetCount = GetBetCount();
+            ViewBag.UserCount = await GetUserCount();
+            ViewBag.RemainingGameCount = await GetRemainingGameCount();
+            ViewBag.BetCount = await GetBetCount();
+            ViewBag.PageViews = await GetPageViews();
 
             ViewBag.NextGame = db.Games.Include(j => j.Local).Include(j => j.Visitor).Where<Game>(m => m.StartDate > DateTime.UtcNow).OrderBy<Game, DateTime>(k => k.StartDate).First<Game>();
 
             return View();
         }
 
-        private int GetUserCount()
+        private async Task<int> GetUserCount()
         {
             if (HttpRuntime.Cache[CacheEnum.UserCount] != null)
                 return (int)HttpRuntime.Cache[CacheEnum.UserCount];
 
-            int userCount = db.Users.Count<ApplicationUser>();
+            int userCount = await db.Users.CountAsync<ApplicationUser>();
             HttpRuntime.Cache.Insert(CacheEnum.UserCount, userCount, null, DateTime.UtcNow.AddMinutes(15), Cache.NoSlidingExpiration);
             return userCount;
         }
 
-        private int GetRemainingGameCount()
+        private async Task<int> GetRemainingGameCount()
         {
             if (HttpRuntime.Cache[CacheEnum.RemainingGameCount] != null)
                 return (int)HttpRuntime.Cache[CacheEnum.RemainingGameCount];
 
-            int gameCount = db.Games.Where<Game>(g => g.StartDate > DateTime.UtcNow).Count<Game>();
+            int gameCount = await db.Games.Where<Game>(g => g.StartDate > DateTime.UtcNow).CountAsync<Game>();
 
             HttpRuntime.Cache.Insert(CacheEnum.RemainingGameCount, gameCount, null, DateTime.UtcNow.AddMinutes(60), Cache.NoSlidingExpiration);
             return gameCount;
         }
 
-        private int GetBetCount()
+        private async Task<int> GetBetCount()
         {
             if (HttpRuntime.Cache[CacheEnum.BetCount] != null)
                 return (int)HttpRuntime.Cache[CacheEnum.BetCount];
 
-            int betCount = db.Bets.Count<Bet>();
+            int betCount = await db.Bets.CountAsync<Bet>();
 
             HttpRuntime.Cache.Insert(CacheEnum.BetCount, betCount, null, DateTime.UtcNow.AddMinutes(15), Cache.NoSlidingExpiration);
             return betCount;
+        }
+
+        private async Task<string> GetPageViews()
+        {
+            if (HttpRuntime.Cache[CacheEnum.GooglePageViews] != null)
+                return (string)HttpRuntime.Cache[CacheEnum.GooglePageViews];
+
+            string fileName = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "App_Data", "061868b5357ec57ce2cd01f7cba0d45c780d07f6-privatekey.p12");
+            var certificate = new X509Certificate2(fileName, "notasecret", X509KeyStorageFlags.Exportable);
+
+            ServiceAccountCredential credential = new ServiceAccountCredential(
+               new ServiceAccountCredential.Initializer("976986011558-sitrrlg8ji58a1ad5k9c9feh8p4u6gbh@developer.gserviceaccount.com")
+               {
+                   Scopes = new[] { AnalyticsService.Scope.AnalyticsReadonly }
+               }.FromCertificate(certificate));
+
+            using (Google.Apis.Analytics.v3.AnalyticsService service = new Google.Apis.Analytics.v3.AnalyticsService(new BaseClientService.Initializer
+            {
+                HttpClientInitializer = credential,
+                ApplicationName = "NSWC2014"
+            }))
+            {
+
+                var request = service.Data.Ga.Get("ga:87109047", DateTime.UtcNow.AddDays(-1).ToString("yyyy-MM-dd"), DateTime.UtcNow.ToString("yyyy-MM-dd"), "ga:pageviews");
+                var result = await request.ExecuteAsync();
+
+                HttpRuntime.Cache.Insert(CacheEnum.GooglePageViews, result.TotalsForAllResults["ga:pageviews"], null, DateTime.UtcNow.AddMinutes(60), Cache.NoSlidingExpiration);
+                return result.TotalsForAllResults["ga:pageviews"];
+            }
         }
 
         [AllowAnonymous]

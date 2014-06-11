@@ -43,7 +43,7 @@ namespace NetsizeWorldCup
 
                 Server.ClearError();
 
-#if DEBUG
+#if !DEBUG
                 Response.Redirect("/Home/Error");
 #endif
             }
