@@ -25,6 +25,7 @@ namespace NetsizeWorldCup.Models
 
         public string TimeZoneInfoId { get; set; }
         public string CultureInfoId { get; set; }
+        public string Country { get; set; }
 
         private TimeZoneInfo _timeZone;
 

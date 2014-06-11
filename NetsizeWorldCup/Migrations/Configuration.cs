@@ -9,7 +9,7 @@ namespace NetsizeWorldCup.Migrations
     {
         public Configuration()
         {
-            AutomaticMigrationsEnabled = false;
+            AutomaticMigrationsEnabled = true;
             ContextKey = "NetsizeWorldCup.Models.ApplicationDbContext";
         }
 

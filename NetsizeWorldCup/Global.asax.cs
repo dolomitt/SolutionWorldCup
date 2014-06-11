@@ -20,14 +20,17 @@ namespace NetsizeWorldCup
             BundleConfig.RegisterBundles(BundleTable.Bundles);
         }
 
+        public static void SendMail(string message)
+        {
+            SmtpService service = new SmtpService();
+            service.SendAsync(message);
+        }
+
         protected void Application_Error()
         {
             try
             {
                 Exception ex = Server.GetLastError();
-
-                SmtpService service = new SmtpService();
-
                 string header = "No Headers";
 
                 try
@@ -39,17 +42,18 @@ namespace NetsizeWorldCup
 
                 }
 
-                service.SendAsync(header + " " + ex.ToString());
-
-                Server.ClearError();
-
-#if !DEBUG
-                Response.Redirect("/Home/Error");
-#endif
+                SendMail(header + " " + ex.ToString());
             }
             catch
             {
 
+            }
+            finally
+            {
+                Server.ClearError();
+#if !DEBUG
+                Response.Redirect("/Home/Error");
+#endif
             }
         }
     }

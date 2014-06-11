@@ -21,7 +21,7 @@ namespace NetsizeWorldCup.Controllers
 
             //Thread.CurrentThread.CurrentCulture = CultureInfo.GetCultureInfo(string.Format("{0}-{1}", language, culture));
 
-            
+
             //Thread.CurrentThread.CurrentUICulture = CultureInfo.GetCultureInfo(string.Format("{0}-{1}", language, culture));
 
             Thread.CurrentThread.CurrentCulture = ResolveCulture();
@@ -68,8 +68,10 @@ namespace NetsizeWorldCup.Controllers
         [AllowAnonymous]
         public ActionResult Index()
         {
-            Dictionary<string, decimal> results = ComputeScores(this.db);
+            GameResults results = ComputeScores(this.db);
             Dictionary<string, int> betCounts = GetBetCount();
+
+            ViewBag.GamesPlayedCount = results.GamesPlayedCount;
 
             return View(
                 UserManager.Users.ToList<ApplicationUser>()
@@ -77,10 +79,12 @@ namespace NetsizeWorldCup.Controllers
                 i =>
                     new UserModel
                     {
-                        UserName = i.UserName,
-                        Score = results[i.Id],
+                        Player = i.UserName,
+                        Score = results.Results[i.Id],
                         BetCount = betCounts[i.Id],
-                        TimeZoneInfoId = i.TimeZoneInfoId
+                        TimeZoneInfoId = i.TimeZoneInfoId,
+                        Email = i.Email,
+                        Country = i.Country
                     }
                         )
                         .OrderByDescending<UserModel, decimal>(u => u.Score).ToList());
@@ -97,10 +101,16 @@ namespace NetsizeWorldCup.Controllers
             return results;
         }
 
-        public static Dictionary<string, decimal> ComputeScores(ApplicationDbContext db)
+        public class GameResults
+        {
+            public Dictionary<string, decimal> Results { get; set; }
+            public int GamesPlayedCount { get; set; }
+        }
+
+        public static GameResults ComputeScores(ApplicationDbContext db)
         {
             if (HttpRuntime.Cache[CacheEnum.Scores] != null)
-                return (Dictionary<string, decimal>)HttpRuntime.Cache[CacheEnum.Scores];
+                return (GameResults)HttpRuntime.Cache[CacheEnum.Scores];
 
             lock (_SyncRootScores)
             {
@@ -109,8 +119,12 @@ namespace NetsizeWorldCup.Controllers
                 foreach (ApplicationUser user in db.Users)
                     results.Add(user.Id, 0);
 
+                var gamesPlayed = 0;
+
                 foreach (Game game in db.Games.Where<Game>(g => g.Result.HasValue).ToList<Game>())
                 {
+                    gamesPlayed++;
+
                     foreach (Bet bet in db.Bets.Where<Bet>(b => b.Game.ID == game.ID).ToList<Bet>())
                     {
                         //we have a winner
@@ -124,13 +138,15 @@ namespace NetsizeWorldCup.Controllers
                             if (game.Phase.ID == 5)
                                 weight = 4;
 
-                            results[bet.Owner.Id] += weight * game.GetOdd(game.Result.Value);
+                            results[bet.Owner.Id] += 10 * weight * game.GetOdd(game.Result.Value);
                         }
                     }
                 }
 
-                HttpRuntime.Cache.Insert(CacheEnum.Scores, results, null, DateTime.UtcNow.AddMinutes(30), System.Web.Caching.Cache.NoSlidingExpiration);
-                return results;
+                var data = new GameResults { GamesPlayedCount = gamesPlayed, Results = results };
+
+                HttpRuntime.Cache.Insert(CacheEnum.Scores, data, null, DateTime.UtcNow.AddMinutes(30), System.Web.Caching.Cache.NoSlidingExpiration);
+                return data;
             }
         }
 
@@ -141,6 +157,29 @@ namespace NetsizeWorldCup.Controllers
         {
             ViewBag.ReturnUrl = returnUrl;
             return View();
+        }
+
+        private void CheckUserCountry(ApplicationUser user)
+        {
+            try
+            {
+                if (user.Country == null)
+                {
+                    ApplicationUser u = db.Users.FirstOrDefault<ApplicationUser>(i => i.Id == user.Id);
+                    CultureInfo ci = InternationalizationAttribute.ResolveCulture();
+
+                    var regex = new System.Text.RegularExpressions.Regex(@"([\w+\s*\.*]+\))");
+                    var match = regex.Match(ci.DisplayName);
+                    string countryName = match.Value.Length == 0 ? "NA" : match.Value.Substring(0, match.Value.Length - 1);
+
+                    u.Country = countryName;
+                    db.SaveChanges();
+                }
+            }
+            catch (Exception ex)
+            {
+                MvcApplication.SendMail(ex.ToString());
+            }
         }
 
         //
@@ -161,6 +200,8 @@ namespace NetsizeWorldCup.Controllers
 
                 if (user != null)
                 {
+                    this.CheckUserCountry(user);
+
                     await SignInAsync(user, model.RememberMe);
                     return RedirectToLocal(returnUrl);
                 }
@@ -203,6 +244,8 @@ namespace NetsizeWorldCup.Controllers
 
                 if (result.Succeeded)
                 {
+                    this.CheckUserCountry(user);
+
                     await SignInAsync(user, isPersistent: false);
 
                     // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=320771

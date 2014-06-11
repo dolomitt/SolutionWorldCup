@@ -8,6 +8,7 @@ using Owin;
 using System;
 using NetsizeWorldCup.Models;
 using System.Data.Entity;
+using NetsizeWorldCup.Migrations;
 
 namespace NetsizeWorldCup
 {
@@ -16,6 +17,8 @@ namespace NetsizeWorldCup
         // For more information on configuring authentication, please visit http://go.microsoft.com/fwlink/?LinkId=301864
         public void ConfigureAuth(IAppBuilder app)
         {
+            Database.SetInitializer(new MigrateDatabaseToLatestVersion<ApplicationDbContext, Configuration>()); 
+
             //// Initializes and seeds the database.
 //#if DEBUG
 //            Database.SetInitializer<ApplicationDbContext>(new ApplicationDbInitializer());

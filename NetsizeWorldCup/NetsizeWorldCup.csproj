@@ -14,7 +14,7 @@
     <RootNamespace>NetsizeWorldCup</RootNamespace>
     <AssemblyName>NetsizeWorldCup</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <MvcBuildViews>false</MvcBuildViews>
+    <MvcBuildViews>true</MvcBuildViews>
     <UseIISExpress>true</UseIISExpress>
     <IISExpressSSLPort />
     <IISExpressAnonymousAuthentication />
@@ -220,6 +220,10 @@
     <Compile Include="Migrations\201406091424419_InitialCreate.cs" />
     <Compile Include="Migrations\201406091424419_InitialCreate.Designer.cs">
       <DependentUpon>201406091424419_InitialCreate.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201406111926033_AddCountry.cs" />
+    <Compile Include="Migrations\201406111926033_AddCountry.Designer.cs">
+      <DependentUpon>201406111926033_AddCountry.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\BetClic.cs" />
@@ -580,6 +584,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201406091424419_InitialCreate.resx">
       <DependentUpon>201406091424419_InitialCreate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201406111926033_AddCountry.resx">
+      <DependentUpon>201406111926033_AddCountry.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

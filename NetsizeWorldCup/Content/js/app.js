@@ -33,7 +33,14 @@ window.colors = function(){
 
 function SetBet(gameId, result) {
     $.post("/Bet/Place", { GameId: gameId, Result: result },
-        function () {
+        function (data) {
+
+            if (!data.Status)
+            {
+                alert(data.Message);
+                return false;
+            }
+
             var btnId1 = '#btnbet_1_' + gameId;
             var btnId2 = '#btnbet_2_' + gameId;
             var btnId3 = '#btnbet_3_' + gameId;
