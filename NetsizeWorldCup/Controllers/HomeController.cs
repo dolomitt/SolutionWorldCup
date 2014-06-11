@@ -102,30 +102,37 @@ namespace NetsizeWorldCup.Controllers
 
         private async Task<string> GetPageViews()
         {
-            if (HttpRuntime.Cache[CacheEnum.GooglePageViews] != null)
-                return (string)HttpRuntime.Cache[CacheEnum.GooglePageViews];
-
-            string fileName = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "App_Data", "061868b5357ec57ce2cd01f7cba0d45c780d07f6-privatekey.p12");
-            var certificate = new X509Certificate2(fileName, "notasecret", X509KeyStorageFlags.Exportable);
-
-            ServiceAccountCredential credential = new ServiceAccountCredential(
-               new ServiceAccountCredential.Initializer("976986011558-sitrrlg8ji58a1ad5k9c9feh8p4u6gbh@developer.gserviceaccount.com")
-               {
-                   Scopes = new[] { AnalyticsService.Scope.AnalyticsReadonly }
-               }.FromCertificate(certificate));
-
-            using (Google.Apis.Analytics.v3.AnalyticsService service = new Google.Apis.Analytics.v3.AnalyticsService(new BaseClientService.Initializer
+            try
             {
-                HttpClientInitializer = credential,
-                ApplicationName = "NSWC2014"
-            }))
+                if (HttpRuntime.Cache[CacheEnum.GooglePageViews] != null)
+                    return (string)HttpRuntime.Cache[CacheEnum.GooglePageViews];
+
+                string fileName = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "App_Data", "061868b5357ec57ce2cd01f7cba0d45c780d07f6-privatekey.p12");
+                var certificate = new X509Certificate2(fileName, "notasecret", X509KeyStorageFlags.Exportable | X509KeyStorageFlags.MachineKeySet);
+
+                ServiceAccountCredential credential = new ServiceAccountCredential(
+                   new ServiceAccountCredential.Initializer("976986011558-sitrrlg8ji58a1ad5k9c9feh8p4u6gbh@developer.gserviceaccount.com")
+                   {
+                       Scopes = new[] { AnalyticsService.Scope.AnalyticsReadonly }
+                   }.FromCertificate(certificate));
+
+                using (Google.Apis.Analytics.v3.AnalyticsService service = new Google.Apis.Analytics.v3.AnalyticsService(new BaseClientService.Initializer
+                {
+                    HttpClientInitializer = credential,
+                    ApplicationName = "NSWC2014"
+                }))
+                {
+
+                    var request = service.Data.Ga.Get("ga:87109047", DateTime.UtcNow.AddDays(-1).ToString("yyyy-MM-dd"), DateTime.UtcNow.ToString("yyyy-MM-dd"), "ga:pageviews");
+                    var result = await request.ExecuteAsync();
+
+                    HttpRuntime.Cache.Insert(CacheEnum.GooglePageViews, result.TotalsForAllResults["ga:pageviews"], null, DateTime.UtcNow.AddMinutes(60), Cache.NoSlidingExpiration);
+                    return result.TotalsForAllResults["ga:pageviews"];
+                }
+            }
+            catch
             {
-
-                var request = service.Data.Ga.Get("ga:87109047", DateTime.UtcNow.AddDays(-1).ToString("yyyy-MM-dd"), DateTime.UtcNow.ToString("yyyy-MM-dd"), "ga:pageviews");
-                var result = await request.ExecuteAsync();
-
-                HttpRuntime.Cache.Insert(CacheEnum.GooglePageViews, result.TotalsForAllResults["ga:pageviews"], null, DateTime.UtcNow.AddMinutes(60), Cache.NoSlidingExpiration);
-                return result.TotalsForAllResults["ga:pageviews"];
+                return "Pending...";
             }
         }
 
