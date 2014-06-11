@@ -61,7 +61,7 @@ namespace NetsizeWorldCup.Controllers
             ViewBag.UserCount = await GetUserCount();
             ViewBag.RemainingGameCount = await GetRemainingGameCount();
             ViewBag.BetCount = await GetBetCount();
-            ViewBag.PageViews = await GetPageViews();
+            ViewBag.Analytics = await GetAnalytics();
 
             ViewBag.NextGame = db.Games.Include(j => j.Local).Include(j => j.Visitor).Where<Game>(m => m.StartDate > DateTime.UtcNow).OrderBy<Game, DateTime>(k => k.StartDate).First<Game>();
 
@@ -100,15 +100,15 @@ namespace NetsizeWorldCup.Controllers
             return betCount;
         }
 
-        private async Task<string> GetPageViews()
+        private async Task<AnalyticsReport> GetAnalytics()
         {
             try
             {
                 if (System.Configuration.ConfigurationManager.AppSettings["GoogleAnalytics"] != "Yes")
-                    return "Disabled";
+                    return new AnalyticsReport { PageViews = "Disabled", Sessions = "Disabled" };
 
                 if (HttpRuntime.Cache[CacheEnum.GooglePageViews] != null)
-                    return (string)HttpRuntime.Cache[CacheEnum.GooglePageViews];
+                    return (AnalyticsReport)HttpRuntime.Cache[CacheEnum.GooglePageViews];
 
                 string fileName = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "App_Data", "061868b5357ec57ce2cd01f7cba0d45c780d07f6-privatekey.p12");
                 var certificate = new X509Certificate2(fileName, "notasecret", X509KeyStorageFlags.Exportable | X509KeyStorageFlags.MachineKeySet);
@@ -126,17 +126,25 @@ namespace NetsizeWorldCup.Controllers
                 }))
                 {
 
-                    var request = service.Data.Ga.Get("ga:87109047", DateTime.UtcNow.AddDays(-1).ToString("yyyy-MM-dd"), DateTime.UtcNow.ToString("yyyy-MM-dd"), "ga:pageviews");
+                    var request = service.Data.Ga.Get("ga:87109047", DateTime.UtcNow.AddDays(-1).ToString("yyyy-MM-dd"), DateTime.UtcNow.ToString("yyyy-MM-dd"), "ga:pageviews,ga:sessions");
                     var result = await request.ExecuteAsync();
 
-                    HttpRuntime.Cache.Insert(CacheEnum.GooglePageViews, result.TotalsForAllResults["ga:pageviews"], null, DateTime.UtcNow.AddMinutes(60), Cache.NoSlidingExpiration);
-                    return result.TotalsForAllResults["ga:pageviews"];
+                    var report = new AnalyticsReport { PageViews = result.TotalsForAllResults["ga:pageviews"], Sessions = result.TotalsForAllResults["ga:sessions"] };
+
+                    HttpRuntime.Cache.Insert(CacheEnum.GooglePageViews, report, null, DateTime.UtcNow.AddMinutes(60), Cache.NoSlidingExpiration);
+                    return report;
                 }
             }
             catch
             {
-                return "Pending...";
+                return new AnalyticsReport { PageViews = "Pending..", Sessions = "Pending.." };
             }
+        }
+
+        public class AnalyticsReport
+        {
+            public string PageViews { get; set; }
+            public string Sessions { get; set; }
         }
 
         [AllowAnonymous]

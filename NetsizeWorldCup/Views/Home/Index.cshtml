@@ -2,51 +2,7 @@
     ViewBag.Title = "Dashboard";
 }
 
-<div class="row">
-
-    @Html.Partial("~/Views/Game/_NextGamePartial.cshtml")
-
-    @if (!User.Identity.IsAuthenticated)
-    {
-        <div class="col-md-4">
-            <section class="widget">
-                <header>
-                    <h4>
-                        <i class="fa fa-location-arrow"></i>
-                        Join us !
-                    </h4>
-                </header>
-                <div class="body">
-                    <blockquote>
-                        Please @Html.ActionLink("log in", "Login", "Account") or @Html.ActionLink("register", "Register", "Account") or to the Netsize World Cup 2014 !
-                    </blockquote>
-                </div>
-            </section>
-        </div>
-    }
-    @if (ViewBag.WeatherInfo != null)
-    {
-        <div class="col-md-4">
-            <section class="widget">
-                <header>
-                    <h4>
-                        <i class="eicon-adjust"></i>
-                        Weather in Paris
-                    </h4>
-                </header>
-                <ul class="news-list">
-                    <li>
-                        <img class="pull-left img-circle" alt="" src="@ViewBag.WeatherInfo.ImageUrl.Replace("/k/", "/c/")">
-                        <div class="news-item-info">
-                            <div class="comment">@ViewBag.WeatherInfo.Text</div>
-                        </div>
-                    </li>
-                </ul>
-            </section>
-        </div>
-    }
-</div>
-<div class="row">
+<div class="row hidden-xs hidden-sm">
     <div class="col-md-2 col-sm-4 col-xs-6">
         <div class="box">
             <div class="big-text">@ViewBag.UserCount</div>
@@ -76,12 +32,65 @@
     </div>
     <div class="col-md-2 col-sm-4 col-xs-6">
         <div class="box">
-            <div class="big-text">@ViewBag.PageViews</div>
+            <div class="big-text">@ViewBag.Analytics.PageViews</div>
             <div class="description">
                 <i class="fa fa-dashboard"></i>
                 Page Views on 24h
             </div>
         </div>
+    </div>
+    <div class="col-md-2 col-sm-4 col-xs-6">
+        <div class="box">
+            <div class="big-text">@ViewBag.Analytics.Sessions</div>
+            <div class="description">
+                <i class="fa fa-dashboard"></i>
+                Sessions on 24h
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    @Html.Partial("~/Views/Game/_NextGamePartial.cshtml")
+    <div class="row">
+        @if (!User.Identity.IsAuthenticated)
+        {
+            <div class="col-md-4">
+                <section class="widget">
+                    <header>
+                        <h4>
+                            <i class="fa fa-location-arrow"></i>
+                            Join us !
+                        </h4>
+                    </header>
+                    <div class="body">
+                        <blockquote>
+                            <p>Please @Html.ActionLink("log in", "Login", "Account") or @Html.ActionLink("register", "Register", "Account") or to the Netsize World Cup 2014 !</p><p>In case of trouble you can <a href="mailto:admin@nswc2014.com">mail the admin</a></p>
+                        </blockquote>
+                    </div>
+                </section>
+            </div>
+        }
+        @if (ViewBag.WeatherInfo != null)
+        {
+            <div class="col-md-4">
+                <section class="widget">
+                    <header>
+                        <h4>
+                            <i class="eicon-adjust"></i>
+                            Weather in Paris
+                        </h4>
+                    </header>
+                    <ul class="news-list">
+                        <li>
+                            <img class="pull-left img-circle" alt="" src="@ViewBag.WeatherInfo.ImageUrl.Replace("/k/", "/c/")">
+                            <div class="news-item-info">
+                                <div>@ViewBag.WeatherInfo.Text</div>
+                            </div>
+                        </li>
+                    </ul>
+                </section>
+            </div>
+        }
     </div>
 </div>
 <div class="row">
@@ -116,7 +125,7 @@
         </section>
     </div>
 </div>
-<div class="row">
+@*<div class="row">
     <div class="col-md-8">
         <section class="widget">
             <header>
@@ -126,9 +135,9 @@
                 </h4>
             </header>
             <div class="box">
-                <a class="twitter-timeline" href="https://twitter.com/search?q=%23nswc2014" data-widget-id="476643735522910209">Tweets concernant "#nswc2014"</a>
+                <a class="twitter-timeline" href="https://twitter.com/search?q=%23WorldCup" data-widget-id="476716202891284480">Tweets on "#Worldcup"</a>
                 <script>!function (d, s, id) { var js, fjs = d.getElementsByTagName(s)[0], p = /^http:/.test(d.location) ? 'http' : 'https'; if (!d.getElementById(id)) { js = d.createElement(s); js.id = id; js.src = p + "://platform.twitter.com/widgets.js"; fjs.parentNode.insertBefore(js, fjs); } }(document, "script", "twitter-wjs");</script>
             </div>
         </section>
     </div>
-</div>
+</div>*@

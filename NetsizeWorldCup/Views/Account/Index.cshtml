@@ -10,13 +10,14 @@
             <header>
                 <h4>
                     <i class="fa fa-group"></i>
-                    Users
+                    Players <small>Counting @Model.Count() Up to Now</small>
                 </h4>
             </header>
             <div class="body">
                 <table class="table table-striped">
                     <thead>
                         <tr>
+                            <th>Pos.</th>
                             <th>
                                 @Html.DisplayNameFor(model => model.UserName)
                             </th>
@@ -26,10 +27,12 @@
                             <th>Bet Count</th>
                         </tr>
                     </thead>
+                    @{ var pos = 1; }
                     <tbody>
                         @foreach (NetsizeWorldCup.Models.UserModel item in Model)
                         {
                             <tr>
+                                <td>@(pos++)</td>
                                 <td>
                                     @Html.DisplayFor(modelItem => item.UserName)
                                 </td>
