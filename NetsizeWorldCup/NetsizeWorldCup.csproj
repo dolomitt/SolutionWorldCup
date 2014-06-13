@@ -214,6 +214,7 @@
     <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Controllers\BetController.cs" />
     <Compile Include="Controllers\GameController.cs" />
+    <Compile Include="Controllers\MessageController.cs" />
     <Compile Include="Controllers\TeamController.cs" />
     <Compile Include="DateTimeHelper.cs" />
     <Compile Include="GameContext.cs" />
@@ -572,6 +573,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Views\Bet\" />
+    <Folder Include="Views\Message\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />

@@ -370,8 +370,11 @@ namespace NetsizeWorldCup.Controllers
         }
 
         [AllowAnonymous]
-        public JsonResult UpdateOdds()
+        public JsonResult UpdateOdds(string password)
         {
+            if (password!="orange05!")
+                return Json(new { status = false });
+
             try
             {
                 this.GetLastOdds();
@@ -380,6 +383,88 @@ namespace NetsizeWorldCup.Controllers
             catch (Exception ex)
             {
                 return Json(new { status = false, message = ex.ToString() });
+            }
+        }
+
+        [AllowAnonymous]
+        public JsonResult UpdateResults(string password)
+        {
+            if (password != "orange05!")
+                return Json(new { status = false });
+
+            try
+            {
+                if (System.Configuration.ConfigurationManager.AppSettings["UpdateResults"] == "Yes")
+                {
+                    string url = "http://www.scorespro.com/rss2/live-soccer.xml";
+                    SyndicationFeed feed = null;
+
+                    using (XmlReader reader = XmlReader.Create(url))
+                    {
+                        feed = SyndicationFeed.Load(reader);
+                    }
+
+                    if (feed == null)
+                        return Json(new { Result = false, Message = "Feed is null" }, JsonRequestBehavior.AllowGet);
+
+                    var modified = false;
+
+                    foreach (var item in feed.Items)
+                    {
+                        if (item.Title.Text.Contains("(FIFA-GS)"))
+                        {
+                            string data = item.Title.Text.Substring(item.Title.Text.IndexOf("(FIFA-GS)") + 9).Trim();
+                            string gameInfo = data.Substring(0, data.IndexOf(":"));
+
+                            string score = data.Substring(data.IndexOf(":") + 1).Trim();
+                            int scoreLocal = Convert.ToInt32(score.Split('-')[0]);
+                            int scoreVisitor = Convert.ToInt32(score.Split('-')[1]);
+
+                            var gameResult = 0;
+
+                            if (scoreLocal > scoreVisitor)
+                                gameResult = 1;
+                            else if (scoreLocal == scoreVisitor)
+                                gameResult = 2;
+                            else
+                                gameResult = 3;
+
+                            string local = gameInfo.Split(new string[] { " vs " }, StringSplitOptions.None)[0].Trim();
+                            string visitor = gameInfo.Split(new string[] { " vs " }, StringSplitOptions.None)[1].Trim();
+
+                            //coming back to UTC
+                            DateTime publishedDate = item.PublishDate.UtcDateTime;
+
+                            Game game = db.Games.ToList<Game>().FirstOrDefault<Game>(g => g.Local.Name == local && g.Visitor.Name == visitor && g.StartDate.ToShortDateString() == publishedDate.ToShortDateString());
+
+                            if (game == null)
+                                continue;
+
+                            if (game.Result != gameResult)
+                            { 
+                                game.Result = gameResult;
+                                modified = true;
+                            }
+                        }
+                        //"#Soccer #Livescore @ScoresPro: (FIFA-GS) Spain vs Netherlands: 0-0"
+                    }
+
+                    if (modified)
+                    {
+                        db.SaveChanges();
+
+                        HttpRuntime.Cache.Remove(CacheEnum.Scores);
+                        AccountController.ComputeScores(this.db);
+                    }
+
+                    return Json(new { Result = true }, JsonRequestBehavior.AllowGet);
+                }
+
+                return Json(new { Result = false, Message = "Update results disabled" }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                return Json(new { Result = false, Message = ex.ToString() }, JsonRequestBehavior.AllowGet);
             }
         }
     }

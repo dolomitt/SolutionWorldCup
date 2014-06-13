@@ -11,18 +11,39 @@ namespace UpdateOdds
     {
         static int Main(string[] args)
         {
+            int result = 0;
+
             try
             {
-                HttpWebRequest request = (HttpWebRequest)WebRequest.Create("http://nswc2014.azurewebsites.net/Home/UpdateOdds");
+                HttpWebRequest request = (HttpWebRequest)WebRequest.Create("http://nswc2014.azurewebsites.net/Home/UpdateOdds?password=orange05!");
                 using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
                 {
                     if (response.StatusCode == HttpStatusCode.OK)
                     {
-                        return 0;
+                        result = 0;
                     }
                     else
                     {
-                        return 1;
+                        result = 1;
+                    }
+                }
+            }
+            catch
+            {
+            }
+
+            try
+            {
+                HttpWebRequest request = (HttpWebRequest)WebRequest.Create("http://nswc2014.azurewebsites.net/Home/UpdateResults?password=orange05!");
+                using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
+                {
+                    if (response.StatusCode == HttpStatusCode.OK)
+                    {
+                        return result;
+                    }
+                    else
+                    {
+                        return result^1;
                     }
                 }
             }

@@ -9,7 +9,7 @@ namespace NetsizeWorldCup
 {
     public class ChatHub : Hub
     {
-        public void Send(string name, string pic, string message)
+        public void Send(string pic, string message)
         {
             // Call the addNewMessageToPage method to update clients.
             Clients.All.addNewMessageToPage(Context.User.Identity.Name, pic, message);
@@ -19,7 +19,7 @@ namespace NetsizeWorldCup
                 var user = db.Users.First<ApplicationUser>(u => u.UserName == Context.User.Identity.Name);
 
                 db.Messages.Add(new Message { Body = message, Owner = user });
-                db.SaveChangesAsync();
+                db.SaveChanges();
             }
         }
     }
