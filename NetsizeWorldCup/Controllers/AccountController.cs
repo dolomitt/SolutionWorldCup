@@ -74,20 +74,20 @@ namespace NetsizeWorldCup.Controllers
             ViewBag.GamesPlayedCount = results.GamesPlayedCount;
 
             return View(
-                UserManager.Users.ToList<ApplicationUser>()
+                db.Users.ToList<ApplicationUser>()
                 .Select<ApplicationUser, UserModel>(
                 i =>
                     new UserModel
                     {
                         Player = i.UserName,
-                        Score = results.Results[i.Id],
-                        BetCount = betCounts[i.Id],
+                        Score = (results.Results.ContainsKey(i.Id)?results.Results[i.Id]:0),
+                        BetCount = (betCounts.ContainsKey(i.Id)?betCounts[i.Id]:0),
                         TimeZoneInfoId = i.TimeZoneInfoId,
                         Email = i.Email,
                         Country = i.Country
                     }
                         )
-                        .OrderByDescending<UserModel, decimal>(u => u.Score).ToList());
+                        .OrderByDescending<UserModel, decimal>(u => u.Score).ThenBy<UserModel, string>(i => i.Player).ToList());
         }
 
 

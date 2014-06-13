@@ -20,6 +20,7 @@ namespace NetsizeWorldCup
         public DateTime EndDate { get { return StartDate.AddMinutes(105); } }
 
         public string Location { get; set; }
+        public string TVBroadcast { get; set; }
 
         public int? Result { get; set; }
 

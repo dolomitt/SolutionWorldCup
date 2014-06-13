@@ -14,6 +14,7 @@
                 </h4>
             </header>
             <div class="body">
+                <blockquote><p>Bet Count = how many bets you placed, Gain = how much money you would have won minus the original bet amount i.e. @((10).ToString("C2")), Wallet = Total Amount Won</p></blockquote>
                 <table class="table table-striped">
                     <thead>
                         <tr>
@@ -30,12 +31,12 @@
                             <th>Wallet</th>
                         </tr>
                     </thead>
-                    @{ var pos = 1; }
+                    @{ var pos = 0; decimal lastAmount = 0;}
                     <tbody>
                         @foreach (NetsizeWorldCup.Models.UserModel item in Model)
                         {
                             <tr>
-                                <td>@(pos++)</td>
+                                <td>@((lastAmount != item.Score) ? ++pos : pos)</td>
                                 <td>
                                     @Html.DisplayFor(modelItem => item.Player)
                                 </td>
@@ -43,10 +44,11 @@
                                 @*<td>@item.Email.Split('@')[0]</td>*@
                                 <td class="hidden-xs hidden-sm"><small>@item.TimeZoneInfo.DisplayName</small></td>
                                 @*<td>@(item.TimeZoneInfo.IsDaylightSavingTime(DateTime.Now)?"Yes":"No")</td>*@
-                                
+
                                 <td class="hidden-xs">@item.BetCount</td>
                                 <td class="hidden-xs">@((item.Score - (10 * Math.Min(item.BetCount, (int)ViewBag.GamesPlayedCount))).ToString("C2"))</td>
                                 <td>@item.Score.ToString("c")</td>
+                                @{ if (lastAmount != item.Score) { lastAmount = item.Score;}}
                             </tr>
                         }
                     </tbody>
