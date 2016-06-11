@@ -11,7 +11,7 @@
         <header>
             <h4>
                 <i class="fa fa-file-alt"></i>
-                Current Games
+                Current Games <small>@((ViewBag.OtherPlayer!=null)?"Displaying Bets of " + ViewBag.OtherPlayer:"")</small>
             </h4>
         </header>
         <div class="body">
@@ -44,7 +44,7 @@
                                     @*@item.StartDate.UtcToLocal((TimeZoneInfo)ViewBag.CurrentTimeZoneInfo).ToShortDateString()*@ @item.StartDate.UtcToLocal((TimeZoneInfo)ViewBag.CurrentTimeZoneInfo).ToShortTimeString()
                                 </td>
                                 <td class="text-right hidden-sm hidden-xs col-lg-1" style="vertical-align: middle">
-                                    <img src="@item.Local.FlagUrl" style="box-shadow: 0px 0px 10px #888;border-radius: 5px;width:70px;height:46px" />
+                                    <span class="team-flag @item.Local.FlagUrl"></span>@*<img src="@item.Local.FlagUrl" style="box-shadow: 0px 0px 10px #888;border-radius: 5px;width:70px;height:46px" />*@
                                 </td>
                                 <td class="text-center col-lg-2" style="vertical-align: middle">
                                     <div>@Html.DisplayFor(modelItem => item.Local.Name) - @Html.DisplayFor(modelItem => item.Visitor.Name)</div>
@@ -76,7 +76,7 @@
                                     }
                                 </td>
                                 <td class="hidden-sm hidden-xs col-lg-1" style="vertical-align: middle">
-                                    <img src="@item.Visitor.FlagUrl" style="box-shadow: 0px 0px 10px #888; border-radius:5px; width:70px; height:46px" />
+                                    <span class="team-flag @item.Visitor.FlagUrl"></span>@*<img src="@item.Visitor.FlagUrl" style="box-shadow: 0px 0px 10px #888; border-radius:5px; width:70px; height:46px" />*@
                                 </td>
                                 <td class="hidden-md hidden-sm hidden-xs col-lg-1" style="vertical-align: middle">
                                     @Html.DisplayFor(modelItem => item.Location)

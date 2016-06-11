@@ -21,21 +21,34 @@ namespace NetsizeWorldCup.Controllers
 
         // GET: Game
         [AllowAnonymous]
-        public async Task<ActionResult> Index()
+        public async Task<ActionResult> Index(string player)
         {
             string currentUserId = User.Identity.GetUserId();
-            var user = db.Users.FirstOrDefault<ApplicationUser>(u => u.Id == currentUserId);
+            ApplicationUser user = db.Users.FirstOrDefault<ApplicationUser>(u => u.Id == currentUserId);
 
             if (user != null)
                 ViewBag.CurrentTimeZoneInfo = user.TimeZoneInfo;
             else
                 ViewBag.CurrentTimeZoneInfo = TimeZoneInfo.Local;
 
+            if (!String.IsNullOrEmpty(player))
+            {
+                user = db.Users.FirstOrDefault<ApplicationUser>(u => u.UserName == player);
+                ViewBag.OtherPlayer = player;
+            }
+
             if (User.Identity.IsAuthenticated && user != null)
-                ViewBag.UserBets = db.Bets.Where<Bet>(b => b.Owner.Id == currentUserId).Select<Bet, string>(b => b.Game.ID + "_" + b.Forecast).ToList<string>();
+            {
+                if (user.UserName == User.Identity.Name)
+                    ViewBag.UserBets = db.Bets.Where<Bet>(b => b.Owner.Id == user.Id).Select<Bet, string>(b => b.Game.ID + "_" + b.Forecast).ToList<string>();
+                else
+                    ViewBag.UserBets = db.Bets.Where<Bet>(b => b.Owner.Id == user.Id).Where<Bet>(g => g.Game.Result.HasValue).Select<Bet, string>(b => b.Game.ID + "_" + b.Forecast).ToList<string>();
+            }
 
-
-            return View(await db.Games.OrderBy<Game, DateTime>(j => j.StartDate).ToListAsync());
+            if (!String.IsNullOrEmpty(player))
+                return View(await db.Games.Where<Game>(g => g.Result.HasValue).OrderBy<Game, DateTime>(j => j.StartDate).ToListAsync());
+            else
+                return View(await db.Games.OrderBy<Game, DateTime>(j => j.StartDate).ToListAsync());
         }
 
         [AllowAnonymous]
@@ -84,7 +97,10 @@ namespace NetsizeWorldCup.Controllers
 
                 //Removing score table
                 HttpRuntime.Cache.Remove(CacheEnum.Scores);
+                HttpRuntime.Cache.Remove(CacheEnum.CurrentLeader);
+
                 AccountController.ComputeScores(this.db);
+                HomeController.GetCurrentLeader(db);
 
                 return Json(new { Status = true });
             }
@@ -197,6 +213,11 @@ namespace NetsizeWorldCup.Controllers
             }
             base.Dispose(disposing);
         }
+    }
+
+    public class GameFilterModel
+    {
+
     }
 
     public class CalendarEvent

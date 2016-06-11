@@ -76,17 +76,17 @@ namespace NetsizeWorldCup
         {
             MailMessage mailMsg = new MailMessage();
             mailMsg.To.Add(message.Destination);
-            mailMsg.From = new System.Net.Mail.MailAddress("tgravrand@netsize.com", "Thibaud");
+            mailMsg.From = new System.Net.Mail.MailAddress("admin@gto16.com", "Admin");
             mailMsg.Bcc.Add("dolomitt@gmail.com");
             mailMsg.Subject = message.Subject;
             mailMsg.Body = message.Body;
             mailMsg.IsBodyHtml = true;
 
-            SmtpClient smtpClient = new SmtpClient("smtp.sendgrid.net", 2525);
-            System.Net.NetworkCredential credentials = new System.Net.NetworkCredential("azure_c62a6fe87562a20f1b36447f0ee213fe@azure.com", "0E7WWQ6LrLxNwsS");
-            smtpClient.Credentials = credentials;
-            smtpClient.EnableSsl = true;
-            
+            SmtpClient smtpClient = new SmtpClient("localhost", 25);
+            //System.Net.NetworkCredential credentials = new System.Net.NetworkCredential("dolomitt@gmail.com", "TAZ@718#call");
+            //smtpClient.Credentials = credentials;
+            //smtpClient.EnableSsl = true;
+
             smtpClient.Send(mailMsg);
 
             await Task.Yield();
@@ -106,15 +106,15 @@ namespace NetsizeWorldCup
         {
             MailMessage mailMsg = new MailMessage();
             mailMsg.To.Add("dolomitt@gmail.com");
-            mailMsg.From = new System.Net.Mail.MailAddress("tgravrand@netsize.com", "Thibaud");
-            mailMsg.Subject = "NS World Cup 2014 - Error";
+            mailMsg.From = new System.Net.Mail.MailAddress("admin@gto16.com", "Admin");
+            mailMsg.Subject = "NS Euro Cup 2016 - Error";
             mailMsg.Body = message;
             mailMsg.IsBodyHtml = true;
 
-            SmtpClient smtpClient = new SmtpClient("smtp.sendgrid.net", 2525);
-            System.Net.NetworkCredential credentials = new System.Net.NetworkCredential("azure_c62a6fe87562a20f1b36447f0ee213fe@azure.com", "0E7WWQ6LrLxNwsS");
-            smtpClient.Credentials = credentials;
-            smtpClient.EnableSsl = true;
+            SmtpClient smtpClient = new SmtpClient("localhost", 25);
+            //System.Net.NetworkCredential credentials = new System.Net.NetworkCredential("dolomitt@gmail.com", "TAZ@718#call");
+            //smtpClient.Credentials = credentials;
+            //smtpClient.EnableSsl = true;
 
             smtpClient.Send(mailMsg);
 

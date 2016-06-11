@@ -73,6 +73,11 @@ namespace NetsizeWorldCup.Controllers
 
             ViewBag.GamesPlayedCount = results.GamesPlayedCount;
 
+            if (HttpRuntime.Cache[CacheEnum.ConnectedPlayers] == null)
+                ViewBag.PlayersConnected = new List<string>();
+            else
+                ViewBag.PlayersConnected = (List<string>)HttpRuntime.Cache[CacheEnum.ConnectedPlayers];
+
             return View(
                 db.Users.ToList<ApplicationUser>()
                 .Select<ApplicationUser, UserModel>(
@@ -80,8 +85,8 @@ namespace NetsizeWorldCup.Controllers
                     new UserModel
                     {
                         Player = i.UserName,
-                        Score = (results.Results.ContainsKey(i.Id)?results.Results[i.Id]:0),
-                        BetCount = (betCounts.ContainsKey(i.Id)?betCounts[i.Id]:0),
+                        Score = (results.Results.ContainsKey(i.Id) ? results.Results[i.Id] : 0),
+                        BetCount = (betCounts.ContainsKey(i.Id) ? betCounts[i.Id] : 0),
                         TimeZoneInfoId = i.TimeZoneInfoId,
                         Email = i.Email,
                         Country = i.Country
@@ -194,20 +199,24 @@ namespace NetsizeWorldCup.Controllers
                 var user = await UserManager.FindByEmailAsync(model.Email);
 
                 if (user == null)
-                    ModelState.AddModelError("", "Invalid email or password.");
-
-                user = await UserManager.FindAsync(user.UserName, model.Password);
-
-                if (user != null)
                 {
-                    this.CheckUserCountry(user);
-
-                    await SignInAsync(user, model.RememberMe);
-                    return RedirectToLocal(returnUrl);
+                    ModelState.AddModelError("", "Invalid email or password.");
                 }
                 else
                 {
-                    ModelState.AddModelError("", "Invalid username or password.");
+                    user = await UserManager.FindAsync(user.UserName, model.Password);
+
+                    if (user != null)
+                    {
+                        this.CheckUserCountry(user);
+
+                        await SignInAsync(user, model.RememberMe);
+                        return RedirectToLocal(returnUrl);
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("", "Invalid username or password.");
+                    }
                 }
             }
 
@@ -252,7 +261,7 @@ namespace NetsizeWorldCup.Controllers
                     // Send an email with this link
                     string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
                     var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
-                    await UserManager.SendEmailAsync(user.Id, "Netsize World Cup 2014 - Confirm your account", "Hey there, <br/> Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a><br/><br/> Netsize World Cup 2014");
+                    await UserManager.SendEmailAsync(user.Id, "Netsize/Gemalto Euro Cup 2016 - Confirm your account", "Hey there, <br/> Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a><br/><br/> Netsize/Gemalto Euro Cup 2016");
 
                     //Removing score table
                     HttpRuntime.Cache.Remove(CacheEnum.Scores);
@@ -267,6 +276,30 @@ namespace NetsizeWorldCup.Controllers
 
             // If we got this far, something failed, redisplay form
             return View(model);
+        }
+
+        [HttpPost]
+        [Authorize]
+        [ValidateAntiForgeryToken]
+        public ActionResult Change(ChangeAccountViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                ApplicationUser user = db.Users.FirstOrDefault<ApplicationUser>(i => i.UserName == User.Identity.Name);
+
+                if (user == null)
+                    return View("Error");
+
+                user.ImageUrl = model.PictureUrl;
+                user.TimeZoneInfoId = model.TimeZoneInfo;
+
+                db.SaveChangesAsync();
+
+                return RedirectToAction("Index", "Home");
+            }
+
+            // If we got this far, something failed, redisplay form
+            return RedirectToAction("Manage", "Account");
         }
 
         //
@@ -319,7 +352,7 @@ namespace NetsizeWorldCup.Controllers
                 // Send an email with this link
                 string code = await UserManager.GeneratePasswordResetTokenAsync(user.Id);
                 var callbackUrl = Url.Action("ResetPassword", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
-                await UserManager.SendEmailAsync(user.Id, "Netsize World Cup 2014 - Reset Password", "Hey there, <br/> Please reset your password by clicking <a href=\"" + callbackUrl + "\">here</a><br/><br/> Netsize World Cup 2014");
+                await UserManager.SendEmailAsync(user.Id, "Netsize/Gemalto Euro Cup 2016 - Reset Password", "Hey there, <br/> Please reset your password by clicking <a href=\"" + callbackUrl + "\">here</a><br/><br/> Netsize/Gemalto Euro Cup 2016");
                 return RedirectToAction("ForgotPasswordConfirmation", "Account");
             }
 
@@ -411,6 +444,9 @@ namespace NetsizeWorldCup.Controllers
         // GET: /Account/Manage
         public ActionResult Manage(ManageMessageId? message)
         {
+            ApplicationUser user = db.Users.FirstOrDefault<ApplicationUser>(i => i.UserName == User.Identity.Name);
+            //ViewBag.ChangeSettingsModel = new ChangeAccountViewModel { PictureUrl = user.ImageUrl, TimeZoneInfo = user.TimeZoneInfoId };
+            ViewData["ChangeSettingsModel"] = new ChangeAccountViewModel { PictureUrl = user.ImageUrl, TimeZoneInfo = user.TimeZoneInfoId };
             ViewBag.StatusMessage =
                 message == ManageMessageId.ChangePasswordSuccess ? "Your password has been changed."
                 : message == ManageMessageId.SetPasswordSuccess ? "Your password has been set."
@@ -431,6 +467,7 @@ namespace NetsizeWorldCup.Controllers
             bool hasPassword = HasPassword();
             ViewBag.HasLocalPassword = hasPassword;
             ViewBag.ReturnUrl = Url.Action("Manage");
+
             if (hasPassword)
             {
                 if (ModelState.IsValid)
@@ -470,6 +507,9 @@ namespace NetsizeWorldCup.Controllers
                     }
                 }
             }
+
+            ApplicationUser usertmp = db.Users.FirstOrDefault<ApplicationUser>(i => i.UserName == User.Identity.Name);
+            ViewData["ChangeSettingsModel"] = new ChangeAccountViewModel { PictureUrl = usertmp.ImageUrl, TimeZoneInfo = usertmp.TimeZoneInfoId };
 
             // If we got this far, something failed, redisplay form
             return View(model);

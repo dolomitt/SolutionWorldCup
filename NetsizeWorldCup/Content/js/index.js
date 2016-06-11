@@ -24,7 +24,7 @@ $(function () {
             chat.client.addNewMessageToPage = function (name, pic, message) {
                 // Add the message to the page.
                 $('#chat-messages').append('<div class="chat-message"><div class="sender ' + ((inc % 2 == 0) ? 'pull-left' : 'pull-right') + '"><div class="icon"><img src="' + pic + '" class="img-circle" alt=""></div><div class="time"></div></div><div class="chat-message-body' + ((inc % 2 == 1) ? ' on-left' : '') + '"><span class="arrow"></span><div class="sender">' + htmlEncode(name) + '</div><div class="text">' + htmlEncode(message) + '</div></div></div>');
-                inc++;
+                //inc++;
             };
             // Get the user name and store it to prepend to messages.
             $('#displayname').val("@User.Identity.Name");
@@ -45,11 +45,12 @@ $(function () {
                         return;
 
                     // Call the Send method on the hub.
-                    chat.server.send($('#displaypic').val(), $('#message').val());
-                    // Clear text box and reset focus for next comment.
-                    $('#message').val('').focus(); 
-
-                    $('#chat-messages').slimScroll({ scrollBy: $("#chat-messages").height() });
+                    chat.server.send($('#displaypic').val(), $('#message').val()).done(
+                        function () {
+                            $('#chat-messages').slimScroll({ scrollTo: $("#chat-messages").prop('scrollHeight') });
+                            // Clear text box and reset focus for next comment.
+                            $('#message').val('').focus();
+                        });
                 });
             });
         });
@@ -63,11 +64,16 @@ $(function () {
         $.get("/Message/GetLastMessages", function (data) {
             var inc = 0;
             data.Messages.forEach(function (entry) {
-                $('#chat-messages').append('<div class="chat-message"><div class="sender ' + ((inc % 2 == 0) ? 'pull-left' : 'pull-right') + '"><div class="icon"><img src="' + entry.PictureUrl + '" class="img-circle" alt=""></div><div class="time"></div></div><div class="chat-message-body' + ((inc % 2 == 1) ? ' on-left' : '') + '"><span class="arrow"></span><div class="sender">' + htmlEncode(entry.Name) + '</div><div class="text">' + htmlEncode(entry.Message) + '</div></div></div>');
-                inc++;
+                var pic = entry.PictureUrl;
+
+                if (pic == "" || pic == null)
+                    pic = "/Content/Img/2.jpg";
+
+                $('#chat-messages').append('<div class="chat-message"><div class="sender ' + ((inc % 2 == 0) ? 'pull-left' : 'pull-right') + '"><div class="icon"><img src="' + pic + '" class="img-circle" alt=""></div><div class="time"></div></div><div class="chat-message-body' + ((inc % 2 == 1) ? ' on-left' : '') + '"><span class="arrow"></span><div class="sender">' + htmlEncode(entry.Name) + '</div><div class="text">' + htmlEncode(entry.Message) + '</div></div></div>');
+                //inc++;
             });
 
-            $('#chat-messages').slimScroll({ scrollBy: $("#chat-messages").height() });
+            $('#chat-messages').slimScroll({ scrollTo: $("#chat-messages").prop('scrollHeight') });
         });
     };
 

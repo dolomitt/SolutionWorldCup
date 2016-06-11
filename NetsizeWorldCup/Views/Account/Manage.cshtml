@@ -18,10 +18,13 @@
                 @Html.Partial("_SetPasswordPartial")
             }
         </section>
-        @*<section id="externalLogins">
-                @Html.Action("RemoveAccountList")
-                @Html.Partial("_ExternalLoginsListPartial", new ExternalLoginListViewModel { Action = "LinkLogin", ReturnUrl = ViewBag.ReturnUrl })
-            </section>*@
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-7">
+        <section class="widget">
+            @Html.Partial("_ManageAccountPartial", ViewData["ChangeSettingsModel"])
+        </section>
     </div>
 </div>
 @section Scripts {

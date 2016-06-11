@@ -16,8 +16,8 @@ namespace NetsizeWorldCup.Controllers
                 new { 
                     Messages = db.Messages
                     .OrderByDescending<Message, int>(m => m.ID)
-                    .Take<Message>(20).Select<Message, MessageModel>(m => new MessageModel { Name = m.Owner.UserName, PictureUrl = m.Owner.ImageUrl, Message = m.Body })
-                    .ToList<MessageModel>() }, JsonRequestBehavior.AllowGet);
+                    .Take<Message>(20).Select<Message, MessageModel>(m => new MessageModel { ID = m.ID, Name = m.Owner.UserName, PictureUrl = m.Owner.ImageUrl, Message = m.Body })
+                    .OrderBy<MessageModel, int>(m=>m.ID).ToList<MessageModel>() }, JsonRequestBehavior.AllowGet);
         }
 
         public class MessageModel
@@ -25,6 +25,7 @@ namespace NetsizeWorldCup.Controllers
             public string Name { get; set; }
             public string PictureUrl { get; set; }
             public string Message { get; set; }
+            public int ID { get; set; }
         }
     }
 }

@@ -1,0 +1,46 @@
+﻿@using Microsoft.AspNet.Identity
+@model NetsizeWorldCup.Models.ChangeAccountViewModel
+
+
+@using (Html.BeginForm("Change", "Account", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+{
+    @Html.AntiForgeryToken()
+    <fieldset>
+        <legend class="section">Personal Info</legend>
+        @Html.ValidationSummary("", new { @class = "text-danger" })
+        <div class="control-group">
+            @Html.LabelFor(m => m.PictureUrl, new { @class = "col-md-2 control-label" })
+            <div class="controls form-group">
+                <div class="col-md-10">
+                    @Html.TextBoxFor(m => m.PictureUrl, new { @class = "form-control" })
+                </div>
+            </div>
+        </div>
+
+        <div class="control-group">
+            @{
+    var timeZoneList = TimeZoneInfo
+                                    .GetSystemTimeZones()
+                                    .Select(t => new SelectListItem
+                                    {
+                                        Text = t.DisplayName,
+                                        Value = t.Id,
+                                        Selected = t.Id == Model.TimeZoneInfo
+                                    });
+            }
+            @Html.LabelFor(m => m.TimeZoneInfo, new { @class = "col-md-2 control-label required" })
+            <div class="controls form-group">
+                <div class="col-xs-12 col-sm-8">
+                    @Html.DropDownListFor(model => model.TimeZoneInfo, timeZoneList, new { @class = "form-control" })
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Change settings" class="btn btn-default" />
+            </div>
+        </div>
+    </fieldset>
+}
+

@@ -3,6 +3,18 @@
 }
 
 <div class="row hidden-xs hidden-sm">
+    @if (ViewBag.CurrentLeader != null)
+    {
+        <div class="col-md-2 col-sm-4 col-xs-6">
+            <div class="box">
+                <div class="big-text">@((ViewBag.CurrentLeader!=null)?ViewBag.CurrentLeader.Substring(0,Math.Min(10, ViewBag.CurrentLeader.Length)):"None")</div>
+                <div class="description">
+                    <i class="fa fa-thumbs-up"></i>
+                    Current Leader
+                </div>
+            </div>
+        </div>
+    }
     <div class="col-md-2 col-sm-4 col-xs-6">
         <div class="box">
             <div class="big-text">@ViewBag.UserCount</div>
@@ -30,24 +42,26 @@
             </div>
         </div>
     </div>
-    <div class="col-md-2 col-sm-4 col-xs-6">
-        <div class="box">
-            <div class="big-text">@ViewBag.Analytics.PageViews</div>
-            <div class="description">
-                <i class="fa fa-dashboard"></i>
-                Page Views on 24h
+    @if (ViewBag.Analytics!= null) { 
+        <div class="col-md-2 col-sm-4 col-xs-6">
+            <div class="box">
+                <div class="big-text">@ViewBag.Analytics.PageViews</div>
+                <div class="description">
+                    <i class="fa fa-dashboard"></i>
+                    Page Views on 24h
+                </div>
             </div>
         </div>
-    </div>
-    <div class="col-md-2 col-sm-4 col-xs-6">
-        <div class="box">
-            <div class="big-text">@ViewBag.Analytics.Sessions</div>
-            <div class="description">
-                <i class="fa fa-dashboard"></i>
-                Sessions on 24h
+        <div class="col-md-2 col-sm-4 col-xs-6">
+            <div class="box">
+                <div class="big-text">@ViewBag.Analytics.Sessions</div>
+                <div class="description">
+                    <i class="fa fa-dashboard"></i>
+                    Sessions on 24h
+                </div>
             </div>
         </div>
-    </div>
+    }
 </div>
 <div class="row">
     @Html.Partial("~/Views/Game/_NextGamePartial.cshtml")
@@ -64,7 +78,7 @@
                     </header>
                     <div class="body">
                         <blockquote>
-                            <p>Please @Html.ActionLink("log in", "Login", "Account") or @Html.ActionLink("register", "Register", "Account") or to the Netsize World Cup 2014 !</p>
+                            <p>Please @Html.ActionLink("log in", "Login", "Account") or @Html.ActionLink("register", "Register", "Account") or to the Netsize/Gemalto Euro Cup 2016 !</p>
                             <p>In case of trouble you can <a href="mailto:dolomitt@gmail.com">mail the admin</a></p>
                         </blockquote>
                     </div>
@@ -95,97 +109,82 @@
     </div>
 </div>
 <div class="row">
-    @*@if (User.Identity.IsAuthenticated)
+    @if (User.Identity.IsAuthenticated)
     {
         <div class="col-md-6">
             @Html.Partial("~/Views/Home/_ChatPartial.cshtml")
         </div>
-    }*@
-    <div class="col-md-8">
-        <section class="widget">
-            <header>
-                <h4>
-                    <i class="eicon-share"></i>
-                    Feed
-                </h4>
-            </header>
-            <ul class="news-list">
-                @foreach (var item in ViewBag.Feeds)
-                {
-                    <li>
-                        <img class="pull-left img-circle" alt="" src="@item.ImageUrl">
-                        <div class="news-item-info">
-                            <div class="name">
-                                <a href="@item.Url" target="_blank">@item.Title</a>
-                            </div>
-                            <div class="comment hidden-xs">@item.PublishedDate: @Html.Raw(item.Summary.Replace("</p>", "").Replace("<p>", ""))</div>
-                        </div>
-                    </li>
-                }
-            </ul>
-        </section>
-    </div>
-</div>
-@*<div class="row">
-        <div class="col-md-8">
+    }
+    @if (System.Configuration.ConfigurationManager.AppSettings["DisplayFeeds"] == "Yes" && ViewBag.Feeds != null)
+    {
+        <div class="col-md-6">
             <section class="widget">
                 <header>
                     <h4>
                         <i class="eicon-share"></i>
-                        Twitter
+                        Feed
                     </h4>
                 </header>
-                <div class="box">
-                    <a class="twitter-timeline" href="https://twitter.com/search?q=%23WorldCup" data-widget-id="476716202891284480">Tweets on "#Worldcup"</a>
-                    <script>!function (d, s, id) { var js, fjs = d.getElementsByTagName(s)[0], p = /^http:/.test(d.location) ? 'http' : 'https'; if (!d.getElementById(id)) { js = d.createElement(s); js.id = id; js.src = p + "://platform.twitter.com/widgets.js"; fjs.parentNode.insertBefore(js, fjs); } }(document, "script", "twitter-wjs");</script>
-                </div>
+                <ul class="news-list">
+                    @foreach (var item in ViewBag.Feeds)
+                    {
+                        <li>
+                            <img class="pull-left img-circle" alt="" src="@item.ImageUrl">
+                            <div class="news-item-info">
+                                <div class="name">
+                                    <a href="@item.Url" target="_blank">@item.Title</a>
+                                </div>
+                                <div class="comment hidden-xs">@item.PublishedDate: @Html.Raw(item.Summary.Replace("</p>", "").Replace("<p>", ""))</div>
+                            </div>
+                        </li>
+                    }
+                </ul>
             </section>
         </div>
-    </div>*@
-
-
+    }
+</div>
 
 @section Scripts
 {
-<script src="/Content/js/chat.js"></script>
-<script src="~/Scripts/jquery.signalR-2.0.3.min.js"></script>
-<!--Reference the autogenerated SignalR hub script. -->
-<script src="~/signalr/hubs"></script>
-<!--SignalR script to update the chat page and send messages.-->
-@*<script>
-    $(function () {
-        // Reference the auto-generated proxy for the hub.
-        var chat = $.connection.chatHub;
-        var inc = 0;
-        // Create a function that the hub can call back to display messages.
-        chat.client.addNewMessageToPage = function (name, pic, message) {
-            // Add the message to the page.
-            $('#chat-messages').append('<div class="chat-message"><div class="sender ' + ((inc % 2 == 0) ? 'pull-left' : 'pull-right') + '"><div class="icon"><img src="' + pic + '" class="img-circle" alt=""></div><div class="time"></div></div><div class="chat-message-body' + ((inc % 2 == 1) ? ' on-left' : '') + '"><span class="arrow"></span><div class="sender">' + htmlEncode(name) + '</div><div class="text">' + htmlEncode(message) + '</div></div></div>');
-            inc++;
+    <script src="/Content/js/chat.js"></script>
+    <script src="~/Scripts/jquery.signalR-2.0.3.min.js"></script>
+    <!--Reference the autogenerated SignalR hub script. -->
+    <script src="~/signalr/hubs"></script>
+    <!--SignalR script to update the chat page and send messages.-->
+    @*<script>
+            $(function () {
+                // Reference the auto-generated proxy for the hub.
+                var chat = $.connection.chatHub;
+                var inc = 0;
+                // Create a function that the hub can call back to display messages.
+                chat.client.addNewMessageToPage = function (name, pic, message) {
+                    // Add the message to the page.
+                    $('#chat-messages').append('<div class="chat-message"><div class="sender ' + ((inc % 2 == 0) ? 'pull-left' : 'pull-right') + '"><div class="icon"><img src="' + pic + '" class="img-circle" alt=""></div><div class="time"></div></div><div class="chat-message-body' + ((inc % 2 == 1) ? ' on-left' : '') + '"><span class="arrow"></span><div class="sender">' + htmlEncode(name) + '</div><div class="text">' + htmlEncode(message) + '</div></div></div>');
+                    inc++;
 
-            //var view = $("#chat-messages")[0];
-            //view.scrollTop = view.scrollHeight;
-        };
-        // Get the user name and store it to prepend to messages.
-        $('#displayname').val("@User.Identity.Name");
-        $('#displaypic').val("/Content/Img/2.jpg");
-        // Set initial focus to message input box.
-        $('#message').focus();
-        // Start the connection.
-        $.connection.hub.start().done(function () {
-            $('#sendmessage').click(function () {
-                // Call the Send method on the hub.
-                chat.server.send($('#displayname').val(), $('#displaypic').val(), $('#message').val());
-                // Clear text box and reset focus for next comment.
-                $('#message').val('').focus();
+                    //var view = $("#chat-messages")[0];
+                    //view.scrollTop = view.scrollHeight;
+                };
+                // Get the user name and store it to prepend to messages.
+                $('#displayname').val("@User.Identity.Name");
+                $('#displaypic').val("/Content/Img/2.jpg");
+                // Set initial focus to message input box.
+                $('#message').focus();
+                // Start the connection.
+                $.connection.hub.start().done(function () {
+                    $('#sendmessage').click(function () {
+                        // Call the Send method on the hub.
+                        chat.server.send($('#displayname').val(), $('#displaypic').val(), $('#message').val());
+                        // Clear text box and reset focus for next comment.
+                        $('#message').val('').focus();
+                    });
+                });
             });
-        });
-    });
-    // This optional function html-encodes messages for display in the page.
-    function htmlEncode(value) {
-        var encodedValue = $('<div />').text(value).html();
-        return encodedValue;
-    }
-</script>*@
-@*<script src="~/Content/js/index.js"></script>*@
+            // This optional function html-encodes messages for display in the page.
+            function htmlEncode(value) {
+                var encodedValue = $('<div />').text(value).html();
+                return encodedValue;
+            }
+        </script>*@
+    <script src="~/Content/js/index.js"></script>
 }

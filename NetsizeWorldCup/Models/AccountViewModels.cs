@@ -100,6 +100,16 @@ namespace NetsizeWorldCup.Models
         public string ConfirmPassword { get; set; }
     }
 
+    public class ChangeAccountViewModel
+    {
+        [Display(Name = "Time Zone")]
+        public string TimeZoneInfo { get; set; }
+
+        [Url]
+        [Display(Name = "Picture Url")]
+        public string PictureUrl { get; set; }
+    }
+
     public class ResetPasswordViewModel
     {
         [Required]

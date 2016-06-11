@@ -32,6 +32,8 @@ namespace NetsizeWorldCup.Controllers
         public const string BetCount = "BetCount";
         public const string TeamList = "TeamList";
         public const string GooglePageViews = "GooglePageViews";
+        public const string ConnectedPlayers = "ConnectedPlayers";
+        public const string CurrentLeader = "CurrentLeader";
     }
 
     public class HomeController : BaseController
@@ -63,9 +65,37 @@ namespace NetsizeWorldCup.Controllers
             ViewBag.BetCount = await GetBetCount();
             ViewBag.Analytics = await GetAnalytics();
 
-            ViewBag.NextGame = db.Games.Include(j => j.Local).Include(j => j.Visitor).Where<Game>(m => m.StartDate > DateTime.UtcNow).OrderBy<Game, DateTime>(k => k.StartDate).First<Game>();
+            ViewBag.CurrentLeader = GetCurrentLeader(db);
+
+            ViewBag.NextGame = db.Games.Include(j => j.Local).Include(j => j.Visitor).Where<Game>(m => m.StartDate > DateTime.UtcNow).OrderBy<Game, DateTime>(k => k.StartDate).FirstOrDefault<Game>();
 
             return View();
+        }
+
+        public static string GetCurrentLeader(ApplicationDbContext db)
+        {
+            if (HttpRuntime.Cache[CacheEnum.CurrentLeader] != null)
+                return (string)HttpRuntime.Cache[CacheEnum.CurrentLeader];
+
+            //Retrieving Leader
+            var leaderUserId = AccountController.ComputeScores(db)
+                .Results
+                .ToList<KeyValuePair<string, decimal>>()
+                .OrderByDescending<KeyValuePair<string, decimal>, decimal>(i => i.Value)
+                .ThenBy<KeyValuePair<string, decimal>, string>(i => i.Key)
+                .FirstOrDefault<KeyValuePair<string, decimal>>().Key;
+
+            var leader = db.Users.FirstOrDefault<ApplicationUser>(u => u.Id == leaderUserId);
+
+            if (leader != null)
+            {
+                HttpRuntime.Cache.Insert(CacheEnum.CurrentLeader, leader.UserName, null, DateTime.UtcNow.AddMinutes(15), Cache.NoSlidingExpiration);
+                return leader.UserName;
+            }
+            else
+            {
+                return null;
+            }
         }
 
         private async Task<int> GetUserCount()
@@ -167,6 +197,41 @@ namespace NetsizeWorldCup.Controllers
 
         public void SetLastOdds()
         {
+            bool matchAdded = false;
+
+            foreach (var game in games)
+            {
+                string[] teamNames = game.Value.name.Split('-');
+
+                if (teamNames.Length != 2)
+                    continue;
+
+                var localTeamName = teamNames[0].Trim();
+                var visitorTeamName = teamNames[1].Trim();
+
+                var localTeam = db.Teams.FirstOrDefault(t => t.Name == localTeamName);
+                var visitorTeam = db.Teams.FirstOrDefault(t => t.Name == visitorTeamName);
+
+                if (localTeam == null || visitorTeam == null)
+                    continue;
+
+                var gameStartDate = game.Value.start_date.AddHours(-1);
+
+                var existingGame = db.Games.FirstOrDefault(g => g.StartDate == gameStartDate && g.Local.ID == localTeam.ID && g.Visitor.ID == visitorTeam.ID);
+
+                if (existingGame != null)
+                    continue;
+
+                var newGame = new Game() { Local = localTeam, Visitor = visitorTeam, StartDate = gameStartDate, Location = "Paris", Phase = db.Phases.First() };
+
+                db.Games.Add(newGame);
+
+                matchAdded = true;
+            }
+
+            if (matchAdded)
+                db.SaveChanges();
+
             //ignoring games that have already been played
             foreach (Game game in db.Games.Include(j => j.Local).Include(j => j.Visitor).Where<Game>(g => g.StartDate > DateTime.UtcNow))
             {
@@ -208,7 +273,7 @@ namespace NetsizeWorldCup.Controllers
                     }
 
                     //File didn't exist or has been moved to backup
-                    if (System.Configuration.ConfigurationManager.AppSettings["Environment"] == "PROD")
+                    if (System.Configuration.ConfigurationManager.AppSettings["WeatherInfo"] == "Yes")
                     {
                         if (!System.IO.File.Exists(fileName))
                         {
@@ -252,9 +317,9 @@ namespace NetsizeWorldCup.Controllers
             {
                 lock (_syncRootFeed)
                 {
-                    if (System.Configuration.ConfigurationManager.AppSettings["Environment"] == "PROD")
+                    if (System.Configuration.ConfigurationManager.AppSettings["DisplayFeeds"] == "Yes")
                     {
-                        string url = "http://www.fifa.com/worldcup/news/rss.xml";
+                        string url = "http://www.uefa.com/rssfeed/uefaeuro/rss.xml";
                         SyndicationFeed feed = null;
 
                         using (XmlReader reader = XmlReader.Create(url))
@@ -340,7 +405,7 @@ namespace NetsizeWorldCup.Controllers
                     }
 
                     var sport = result.sport.First(s => s.name == "Football");
-                    var wcEvent = sport.@event.First(e => e.name == "World Cup");
+                    var wcEvent = sport.@event.First(e => e.name == "Euro Championship");
 
                     games = wcEvent.match.ToDictionary<Models.Betclic.Match, string>(i => i.name + " - " + i.start_date.AddHours(-1).ToShortDateString());
 
@@ -357,7 +422,7 @@ namespace NetsizeWorldCup.Controllers
             }
             catch
             {
-                return "failure";
+                throw;
             }
         }
 
@@ -372,22 +437,22 @@ namespace NetsizeWorldCup.Controllers
         [AllowAnonymous]
         public JsonResult UpdateOdds(string password)
         {
-            if (password!="orange05!")
-                return Json(new { status = false });
+            if (password != "orange05!")
+                return Json(new { status = false }, JsonRequestBehavior.AllowGet);
 
             try
             {
-                this.GetLastOdds();
-                return Json(new { status = true }, JsonRequestBehavior.AllowGet);
+                var result = this.GetLastOdds();
+                return Json(new { status = true, Message = result }, JsonRequestBehavior.AllowGet);
             }
             catch (Exception ex)
             {
-                return Json(new { status = false, message = ex.ToString() });
+                return Json(new { status = false, message = ex.ToString() }, JsonRequestBehavior.AllowGet);
             }
         }
 
         [AllowAnonymous]
-        public JsonResult UpdateResults(string password)
+        public async Task<JsonResult> UpdateResults(string password)
         {
             if (password != "orange05!")
                 return Json(new { status = false });
@@ -432,6 +497,21 @@ namespace NetsizeWorldCup.Controllers
                             string local = gameInfo.Split(new string[] { " vs " }, StringSplitOptions.None)[0].Trim();
                             string visitor = gameInfo.Split(new string[] { " vs " }, StringSplitOptions.None)[1].Trim();
 
+                            if (visitor == "Bosnia & Herzegovina")
+                                visitor = "Bosnia-Herzegovina";
+
+                            if (local == "Bosnia & Herzegovina")
+                                local = "Bosnia-Herzegovina";
+
+
+                            if (visitor == "Côte D'Ivoire")
+                                visitor = "Ivory Coast";
+
+                            if (local == "Côte D'Ivoire")
+                                local = "Ivory Coast";
+
+
+
                             //coming back to UTC
                             DateTime publishedDate = item.PublishDate.UtcDateTime;
 
@@ -441,7 +521,7 @@ namespace NetsizeWorldCup.Controllers
                                 continue;
 
                             if (game.Result != gameResult)
-                            { 
+                            {
                                 game.Result = gameResult;
                                 modified = true;
                             }
@@ -454,7 +534,10 @@ namespace NetsizeWorldCup.Controllers
                         db.SaveChanges();
 
                         HttpRuntime.Cache.Remove(CacheEnum.Scores);
+                        HttpRuntime.Cache.Remove(CacheEnum.CurrentLeader);
+
                         AccountController.ComputeScores(this.db);
+                        HomeController.GetCurrentLeader(this.db);
                     }
 
                     return Json(new { Result = true }, JsonRequestBehavior.AllowGet);
