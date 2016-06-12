@@ -19,17 +19,19 @@ namespace NetsizeWorldCup
 
             if (!String.IsNullOrEmpty(Context.User.Identity.Name))
             {
-                // Call the addNewMessageToPage method to update clients.
-                Clients.All.addNewMessageToPage(Context.User.Identity.Name, pic, CleanInput(message));
-
                 using (ApplicationDbContext db = new ApplicationDbContext())
                 {
                     var user = db.Users.First<ApplicationUser>(u => u.UserName == Context.User.Identity.Name);
 
                     if (user != null)
                     {
-                        db.Messages.Add(new Message { Body = message, Owner = user });
+                        var newMessage = new Message { Body = message, Owner = user };
+
+                        db.Messages.Add(newMessage);
                         db.SaveChanges();
+
+                        // Call the addNewMessageToPage method to update clients.
+                        Clients.All.addNewMessageToPage(Context.User.Identity.Name, pic, CleanInput(message), newMessage.CreationDate);
                     }
                 }
             }
