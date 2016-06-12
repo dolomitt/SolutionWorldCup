@@ -42,7 +42,7 @@ namespace NetsizeWorldCup
             // Replace invalid characters with empty strings.
             try
             {
-                return Regex.Replace(strIn, @"[^#\w\.@-]", "",
+                return Regex.Replace(strIn, @"[^#\w\s\.@-]", "",
                                      RegexOptions.None, TimeSpan.FromSeconds(1.5));
             }
             // If we timeout when replacing invalid characters, 
