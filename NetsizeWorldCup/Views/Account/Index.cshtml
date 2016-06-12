@@ -28,6 +28,7 @@
                             <th class="hidden-xs hidden-sm">TimeZone</th>
                             @*@<th>Daylight Saving</th>*@
                             <th class="hidden-xs">Bet Count</th>
+                            <th class="hidden-xs">Good Guess</th>
                             <th class="hidden-xs">Gain</th>
                             <th>Wallet</th>
                         </tr>
@@ -54,6 +55,7 @@
                                 @*<td>@(item.TimeZoneInfo.IsDaylightSavingTime(DateTime.Now)?"Yes":"No")</td>*@
 
                                 <td class="hidden-xs">@item.BetCount</td>
+                                <td class="hidden-xs">@item.GoodGuess</td>
                                 <td class="hidden-xs">@((item.Score - (10 * Math.Min(item.BetCount, (int)ViewBag.GamesPlayedCount))).ToString("C2"))</td>
                                 <td><strong>@item.Score.ToString("c0")</strong></td>
                                 @{ if (lastAmount != item.Score) { lastAmount = item.Score;}}

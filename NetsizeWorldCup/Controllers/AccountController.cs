@@ -85,7 +85,8 @@ namespace NetsizeWorldCup.Controllers
                     new UserModel
                     {
                         Player = i.UserName,
-                        Score = (results.Results.ContainsKey(i.Id) ? results.Results[i.Id] : 0),
+                        Score = (results.Results.ContainsKey(i.Id) ? results.Results[i.Id].Score : 0),
+                        GoodGuess = (results.Results.ContainsKey(i.Id) ? results.Results[i.Id].Count : 0),
                         BetCount = (betCounts.ContainsKey(i.Id) ? betCounts[i.Id] : 0),
                         TimeZoneInfoId = i.TimeZoneInfoId,
                         Email = i.Email,
@@ -106,12 +107,6 @@ namespace NetsizeWorldCup.Controllers
             return results;
         }
 
-        public class GameResults
-        {
-            public Dictionary<string, decimal> Results { get; set; }
-            public int GamesPlayedCount { get; set; }
-        }
-
         public static GameResults ComputeScores(ApplicationDbContext db)
         {
             if (HttpRuntime.Cache[CacheEnum.Scores] != null)
@@ -119,10 +114,10 @@ namespace NetsizeWorldCup.Controllers
 
             lock (_SyncRootScores)
             {
-                Dictionary<string, decimal> results = new Dictionary<string, decimal>();
+                Dictionary<string, UserResult> results = new Dictionary<string, UserResult>();
 
                 foreach (ApplicationUser user in db.Users)
-                    results.Add(user.Id, 0);
+                    results.Add(user.Id, new UserResult());
 
                 var gamesPlayed = 0;
 
@@ -143,7 +138,8 @@ namespace NetsizeWorldCup.Controllers
                             if (game.Phase.ID == 5)
                                 weight = 4;
 
-                            results[bet.Owner.Id] += 10 * weight * game.GetOdd(game.Result.Value);
+                            results[bet.Owner.Id].Score += 10 * weight * game.GetOdd(game.Result.Value);
+                            results[bet.Owner.Id].Count += 1;
                         }
                     }
                 }

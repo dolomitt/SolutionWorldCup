@@ -8,6 +8,8 @@ namespace NetsizeWorldCup.Models
         public string Player { get; set; }
         public decimal Score { get; set; }
         public int BetCount { get; set; }
+
+        public int GoodGuess { get; set; }
         public string Email { get; set; }
         public string Country { get; set; }
 

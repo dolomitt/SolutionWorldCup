@@ -80,10 +80,10 @@ namespace NetsizeWorldCup.Controllers
             //Retrieving Leader
             var leaderUserId = AccountController.ComputeScores(db)
                 .Results
-                .ToList<KeyValuePair<string, decimal>>()
-                .OrderByDescending<KeyValuePair<string, decimal>, decimal>(i => i.Value)
-                .ThenBy<KeyValuePair<string, decimal>, string>(i => i.Key)
-                .FirstOrDefault<KeyValuePair<string, decimal>>().Key;
+                .ToList<KeyValuePair<string, UserResult>>()
+                .OrderByDescending<KeyValuePair<string, UserResult>, decimal>(i => i.Value.Score)
+                .ThenBy<KeyValuePair<string, UserResult>, string>(i => i.Key)
+                .FirstOrDefault<KeyValuePair<string, UserResult>>().Key;
 
             var leader = db.Users.FirstOrDefault<ApplicationUser>(u => u.Id == leaderUserId);
 
