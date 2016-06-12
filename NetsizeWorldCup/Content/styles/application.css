@@ -20666,11 +20666,21 @@ table.table thead .sorting_desc_disabled {
 }
 
 
+.team-flag {
+    background-size: 225px 495px;
+    width: 45px;
+    height: 45px;
+    /*position: absolute;*/
+    /*top: 0;*/
+    /*left: 50%;*/
+    margin-left: -22.5px;
+}
+
 [class*=" flag-"], [class^=flag-] {
     display: inline-block;
     margin: 0;
     background-repeat: no-repeat;
-    background-image: url(http://img.uefa.com/imgml/2016/euro/flags/flags_sprite_empty_64x64.png);
+    background-image: url(/Content/img/flags_sprite_empty_64x64.png);
 }
 
 .flag-ALB {

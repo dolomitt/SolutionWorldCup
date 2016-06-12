@@ -509,6 +509,7 @@
     <Content Include="Content\lib\nvd3\LICENSE.md" />
     <Content Include="Content\lib\parsley\parsley-license.md" />
     <Content Include="App_Data\061868b5357ec57ce2cd01f7cba0d45c780d07f6-privatekey.p12" />
+    <None Include="bundleconfig.json" />
     <None Include="DomainDiagram.cd" />
     <None Include="Properties\PublishProfiles\nswc2014 - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\nswc2014 - Web Deploy.pubxml" />
